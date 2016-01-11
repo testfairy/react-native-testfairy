@@ -1,0 +1,25 @@
+{
+  "name": "react-native-testfairy",
+  "version": "1.0.0",
+  "description": "TestFairy for React Native",
+  "author": "Gil Megidish",
+  "main": "./index.js",
+  "scripts": {
+    "test": "echo \"Warn: no test specified. Skipping.\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/testfairy/react-native-testfairy"
+  },
+  "keywords": [
+    "testfairy",
+    "react-native"
+  ],
+  "author": "testfairy",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/testfairy/react-native-testfairy"
+  },
+  "homepage": "https://github.com/testfairy/react-native-testfairy#readme"
+}
+
