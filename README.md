@@ -8,12 +8,12 @@ TestFairyBridge
 2. In XCode, right click the Libraries folder under your project ➜ `Add Files to <your project>`.
 3. Go to `node_modules` ➜ `react-native-testfairy` ➜ `ios` and add all files.
 4. Add libTestFairy.a from the linked project to your project properties ➜ "Build Phases" ➜ "Link Binary With Libraries"
-5. Next you will have to link a few more SDK framework/libraries which are required by TestFairy (if you do not already have them linked.) Under the same "Link Binary With Libraries", click the + and add the following:
-  *. CoreMedia.framework
-  *. CoreMotion.framework
-  *. AVFoundation.framework
-  *. SystemConfiguration.framework
-  *. OpenGLES.framework
+5. Next you will have to link a few more SDK framework/libraries which are required by TestFairy (if you do not already have them linked.) Under the same "Link Binary With Libraries", click the + and add the following:  
+   * CoreMedia.framework  
+   * CoreMotion.framework  
+   * AVFoundation.framework  
+   * SystemConfiguration.framework  
+   * OpenGLES.framework  
 
 ## Usage
 Once the native library has been added to your project, you can now enable session recording with TestFairy. You will need an iOS app token, which you can get from your [preferences](http://app.testfairy.com/settings/) page on your TestFairy account.
