@@ -10,18 +10,23 @@ var {
   StyleSheet,
   Text,
   View,
+  findNodeHandle
 } = React;
 
 const TestFairyBridge = require('react-native-testfairy');
 
 var TestFairy = React.createClass({
+  componentDidMount: function() {
+    TestFairyBridge.hideView(findNodeHandle(this.refs.instructions));
+  },
+
   render: function() {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
           Welcome to React Native!
         </Text>
-        <Text style={styles.instructions}>
+        <Text style={styles.instructions} ref="instructions">
           To get started, edit index.ios.js
         </Text>
         <Text style={styles.instructions}>

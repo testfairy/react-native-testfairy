@@ -34,6 +34,10 @@ class TestFairy {
 	static sendUserFeedback(feedback) {
 		TestFairyBridge.sendUserFeedback(feedback);
 	}
+
+	static hideView(viewTag) {
+		TestFairyBridge.hideView(viewTag);
+	}
 }
 
 module.exports = TestFairy;
