@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+- '4.1'
+before_deploy:
+- sed -i'' "s/\"version\":.*/\"version\":\"${TRAVIS_TAG}\",/g" package.json
+deploy:
+  provider: npm
+  email: support@testfairy.com
+  api_key:
+    secure: vIrxQligyqJMwKK34fD9OjsAyeEvJjYN9bT2l8WEc+GfXNK1LQpxhznONP6vJVOAIw7oNQwoyRdjYtMKqk1wUOx0tQ3tPDgsfIcrHGBlII7tUpWQpKGahXvKmu8wInu6CtYX5QWm9FJcDS/UOsW7MBF/kp2lKS0z5HScHVYV2ZjMQm/cFNgqagui5JxOtb+YyY1NLVac1CibHUf2D8za4HjffWeS+r6xgZ9Lglq4YwVS3MZZFKeC7FwoK4MdATVaj8QUNKbEXsaqVEZ4bm+92fNpMx4AjuWZCNqobo4JrTj710HTqz9c8EO3gueTjDH0CDxCzGONSYFTjF0vaAHvvGMNDK31069YCTuY7df+1BsqiBymouiwQ3XpmNYSkjYsV68mzpwT6pLS7j/kZpzH6UFk5UonZcx2HWRFMuZdauhciy+NwOSdLHOV9S12kHWjtsKjUuIsYDhJqQ6EeAf59SLMW4QNmVaoLr7Np75AruZG5LP7oqfTSHWQHgj+WkObJJprWn3uNvCO8ygtA82BCnsYKM4t072DO+LmNu4h8jQtB+8vhgfjjkdGlM6n1r7q59uLLXorq+Oy/PLbnYy+zvdBDUWOtYSs0Ad2xvi6Y3e4kJZLYMvds2XT6xFfh1KBclBXZiXrN5Duna6OBETU5bwNxsGkxyuz/vdcU1ANb54=
+  on:
+    tags: true
+    repo: testfairy/react-native-testfairy
+
