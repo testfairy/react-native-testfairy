@@ -27,7 +27,7 @@ TestFairy.begin('<insert ios app token here>');
 AppRegistry.registerComponent('app', () => App);
 ```
 
-And that's it! You can now log into your [account](http://app.testfairy.com) and view your sessions. Also, feel free to refer to the (documentation)[https://github.com/testfairy/react-native-testfairy/blob/master/index.js] for other available APIs.
+And that's it! You can now log into your [account](http://app.testfairy.com) and view your sessions. Also, feel free to refer to the [documentation](https://github.com/testfairy/react-native-testfairy/blob/master/index.js) for other available APIs.
 
 ### Hiding views
 TestFairy allows the developer to hide specific views from the recorded video. As the developer, you may choose to hide one or more views from video for security and privacy reasons. For example, you might want to remove all information related to credit card data from appearing in the session.
