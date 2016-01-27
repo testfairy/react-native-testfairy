@@ -12,8 +12,10 @@
     "url": "git+https://github.com/testfairy/react-native-testfairy"
   },
   "keywords": [
+    "react-component",
     "testfairy",
-    "react-native"
+    "react-native",
+    "ios"
   ],
   "author": "testfairy",
   "license": "Apache-2.0",
