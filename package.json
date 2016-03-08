@@ -1,6 +1,6 @@
 {
   "name": "react-native-testfairy",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "TestFairy for React Native",
   "author": "Gil Megidish",
   "main": "./index.js",
@@ -12,8 +12,10 @@
     "url": "git+https://github.com/testfairy/react-native-testfairy"
   },
   "keywords": [
+    "react-component",
     "testfairy",
-    "react-native"
+    "react-native",
+    "ios"
   ],
   "author": "testfairy",
   "license": "Apache-2.0",
