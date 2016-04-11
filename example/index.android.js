@@ -2,24 +2,33 @@
  * Sample React Native App
  * https://github.com/facebook/react-native
  */
-'use strict';
 
-var React = require('react-native');
-var {
+import React, {
   AppRegistry,
+  Component,
   StyleSheet,
   Text,
-  View,
-} = React;
+  View
+} from 'react-native';
 
-var TestFairy = React.createClass({
-  render: function() {
+const TestFairyBridge = require('react-native-testfairy');
+
+class TestFairy extends Component {
+  componentWillMount() {
+    TestFairyBridge.begin('5b3af35e59a1e074e2d50675b1b629306cf0cfbd');
+  }
+
+  componentDidMount() {
+    TestFairyBridge.hideView(this.refs.instructions);
+  }
+
+  render() {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
           Welcome to React Native!
         </Text>
-        <Text style={styles.instructions}>
+        <Text style={styles.instructions} ref="instructions">
           To get started, edit index.android.js
         </Text>
         <Text style={styles.instructions}>
@@ -28,9 +37,9 @@ var TestFairy = React.createClass({
       </View>
     );
   }
-});
+}
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',

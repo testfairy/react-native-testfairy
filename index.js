@@ -1,6 +1,8 @@
 'use strict';
 
-const TestFairyBridge = require("react-native").NativeModules.TestFairyBridge;
+var React = require('react-native');
+const findNodeHandle = React.findNodeHandle;
+const TestFairyBridge = React.NativeModules.TestFairyBridge;
 
 class TestFairy {
 	/**
@@ -94,7 +96,7 @@ class TestFairy {
 	 * @param view The specific view you wish to hide from screenshots
 	 */
 	static hideView(viewTag) {
-		TestFairyBridge.hideView(viewTag);
+		TestFairyBridge.hideView(findNodeHandle(viewTag));
 	}
 }
 
