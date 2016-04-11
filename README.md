@@ -15,16 +15,60 @@ TestFairyBridge
    * SystemConfiguration.framework  
    * OpenGLES.framework  
 
-## Usage
-Once the native library has been added to your project, you can now enable session recording with TestFairy. You will need an iOS app token, which you can get from your [preferences](http://app.testfairy.com/settings/) page on your TestFairy account.
+## Manual installation Android
 
-Next, from your JavaScript file, (index.ios.js for example), import the TestFairy bridge into your project, and invoke `begin` passing in the iOS app token. Best time to invoke `begin` is usually before you register you Application.
+```gradle
+// file: android/settings.gradle
+...
+
+include ':react-native-testfairy'
+project(':react-native-testfairy').projectDir = new File(settingsDir, '../node_modules/react-native-testfairy/android')
+```
+```gradle
+// file: android/app/build.gradle
+...
+
+dependencies {
+    ...
+    compile project(path: ':react-native-testfairy')
+}
+```
+
+```java
+// file: MainActivity.java
+...
+
+import com.testfairy.react.TestFairyPackage; // import package
+
+public class MainActivity extends ReactActivity {
+
+   /**
+   * A list of packages used by the app. If the app uses additional views
+   * or modules besides the default ones, add more packages here.
+   */
+    @Override
+    protected List<ReactPackage> getPackages() {
+        return Arrays.<ReactPackage>asList(
+            new MainReactPackage(),
+            new TestFairyPackage() // Add package
+        );
+    }
+...
+}
+
+```
+
+## Usage
+Once the native library has been added to your project, you can now enable session recording with TestFairy. You will need an app token, which you can get from your [preferences](http://app.testfairy.com/settings/) page on your TestFairy account.
+
+Next, from your JavaScript file, (index.ios.js for example), import the TestFairy bridge into your project, and invoke `begin` passing in the app token. Best time to invoke `begin` is usually in `componentWillMount` or right before you register your application. 
 
 ```
 const TestFairy = require('react-native-testfairy');
 ...
-TestFairy.begin('<insert ios app token here>');
-AppRegistry.registerComponent('app', () => App);
+componentWillMount: function() {
+  TestFairy.begin('<insert ios app token here>');
+}
 ```
 
 And that's it! You can now log into your [account](http://app.testfairy.com) and view your sessions. Also, feel free to refer to the [documentation](https://github.com/testfairy/react-native-testfairy/blob/master/index.js) for other available APIs.
@@ -38,27 +82,42 @@ In order to hide views from your recorded session, you will need to pass a refer
 <Text ref="instructions">This will be hidden</Text>
 ```
 
-Next, in a component callback, such as `componentDidMount`, pass the reference ID back to TestFairy by invoking `hideView`. You will need to import `findNodeHandle` into your project.
+Next, in a component callback, such as `componentDidMount`, pass the reference ID back to TestFairy by invoking `hideView`. 
 
 ```
-var { findNodeHandle } = React;
 const TestFairy = require('react-native-testfairy');
 ...
 var MyComponent = React.createClass({
   ...
+  componentWillMount: function() {
+    TestFairy.begin('<insert ios app token here>');
+  },
+
   componentDidMount: function() {
-    TestFairyBridge.hideView(findNodeHandle(this.refs.instructions));
+    TestFairyBridge.hideView(this.refs.instructions);
   },
   ...
   render: function() {
     return (<Text ref="instructions">This will be hidden</Text>);
   }
 });
-
-TestFairy.begin('<insert ios app token here>');
 ```
 
 Now, your Views will be hidden before any video is uploaded to TestFairy.
+
+## Migrating from 1.x to 2.x
+In order to migrate from 1.x to 2.x, a minor change is required in the way you hide views.
+
+Remove the import of `findNodeHandle`
+```
+- var { findNodeHandle } = React;
+```
+
+Pass the `ref` object directly into `TestFairy.hideView()`
+```
+- TestFairyBridge.hideView(findNodeHandle(this.refs.instructions));
++ TestFairyBridge.hideView(this.refs.instructions);
+```
 
 License
 =======
