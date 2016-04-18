@@ -8,11 +8,16 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.UiThreadUtil;
 
 import com.testfairy.TestFairy;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class TestFairyModule extends ReactContextBaseJavaModule {
@@ -47,19 +52,23 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void identify(final String identity, ReadableMap map) {
+    public void identify(final String identity, final ReadableMap map) {
         runOnUi(new Runnable() {
             @Override
             public void run() {
-                final Map<String, String> traits = null;
-                TestFairy.identify(identity, traits);
+                if (map == null) {
+                    TestFairy.identify(identity, null);
+                } else {
+                    final Map<String, Object> traits = convertMap(map);
+                    TestFairy.identify(identity, traits);
+                }
             }
         });
     }
-
+    
     @ReactMethod
     public void takeScreenshot() {
-        // TODO: Does not exist on Android
+        Log.i("TestFairyModule", "Android does not support taking screen shots");
     }
 
     @ReactMethod
@@ -140,6 +149,71 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
         });
     }
 
+    private Map<String, Object> convertMap(ReadableMap map) {
+        Map<String, Object> input = new HashMap<String, Object>();
+        ReadableMapKeySetIterator iterator = map.keySetIterator();
+        while (iterator.hasNextKey()) {
+            String key = iterator.nextKey();
+            ReadableType type = map.getType(key);
+            switch (type) {
+                case Boolean:
+                    input.put(key, map.getBoolean(key));
+                    break;
+                case String:
+                    input.put(key, map.getString(key));
+                    break;
+                case Number:
+                    input.put(key, map.getDouble(key));
+                    break;
+                case Array:
+                    input.put(key, convertArray(map.getArray(key)));
+                    break;
+                case Map:
+                    input.put(key, convertMap(map.getMap(key)));
+                default:
+                    break;
+            }
+        }
+
+        return input;
+    }
+
+    private ArrayList<Object> convertArray(ReadableArray array) {
+        ArrayList<Object> input = new ArrayList<Object>();
+        ReadableType singleType = null;
+        for (int index = 0; index < array.size(); index++) {
+            ReadableType type = array.getType(index);
+            if (singleType == null)
+                singleType = type;
+
+            if (type != singleType) {
+                Log.d("TestFairyModule", "Cannot mix types in array objects expecting type [" + singleType + "] found [" + type + "] in array. Skipping");
+                continue;
+            }
+
+            switch (type) {
+                case Boolean:
+                    input.add(array.getBoolean(index));
+                    break;
+                case String:
+                    input.add(array.getString(index));
+                    break;
+                case Number:
+                    input.add(array.getDouble(index));
+                    break;
+                case Array:
+                    input.add(convertArray(array.getArray(index)));
+                    break;
+                case Map:
+                    input.add(convertMap(array.getMap(index)));
+                default:
+                    break;
+            }
+        }
+
+        return input;
+    }
+    
     private void runOnUi(Runnable runnable) {
         UiThreadUtil.runOnUiThread(runnable);
     }
