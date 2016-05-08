@@ -10,6 +10,7 @@ This is a sample project using the [TestFairy REST API](http://docs.testfairy.co
 
 #### Android
 Same to [official doc](http://facebook.github.io/react-native/docs/android-setup.html#content)
+
 1. `$ npm install`
 2. `$ npm start`
 3. `$ react-native run-android` or open the Android project in Android studio and run
