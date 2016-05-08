@@ -6,8 +6,13 @@
     "start": "node node_modules/react-native/local-cli/cli.js start"
   },
   "dependencies": {
+    "base-64": "^0.1.0",
     "react": "^0.14.8",
     "react-native": "^0.23.1",
-    "react-native-testfairy": "file:../"
+    "react-native-nav": "^1.1.2",
+    "react-native-testfairy": "file:../",
+    "react-redux": "~4.3.0",
+    "redux": "~3.2.1",
+    "redux-thunk": "~1.0.3"
   }
 }
