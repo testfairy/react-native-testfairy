@@ -147,6 +147,12 @@
 + (void)takeScreenshot;
 
 /**
+ * Set the name of the current screen. Useful for single page
+ * applications which use a single UIViewController.
+ */
++ (void)setScreenName:(NSString *)name;
+
+/**
  * Remote logging, use TFLog as you would use printf. These logs will be sent to the server,
  * but will not appear in the console.
  */
@@ -172,4 +178,8 @@ extern NSString *const TFSDKIdentityTraitWebsiteAddressKey;
 extern NSString *const TFSDKIdentityTraitAgeKey;
 extern NSString *const TFSDKIdentityTraitSignupDateKey;
 extern NSString *const TFSDKEnableCrashReporterKey;
+extern NSString *const TestFairyDidShakeDevice;
+extern NSString *const TestFairyWillProvideFeedback;
+extern NSString *const TestFairyDidCancelFeedback;
+extern NSString *const TestFairyDidSendFeedback;
 
