@@ -22,7 +22,7 @@
  * Change the server endpoint for use with on-premise hosting. Please
  * contact support or sales for more information. Must be called before begin
  *
- * @param serverOverride
+ * @param serverOverride server address for use with TestFairy
  */
 + (void)setServerEndpoint:(NSString *)serverOverride;
 
@@ -149,25 +149,36 @@
 /**
  * Set the name of the current screen. Useful for single page
  * applications which use a single UIViewController.
+ *
+ * @param name logic name of current screen
  */
 + (void)setScreenName:(NSString *)name;
+@end
 
-/**
- * Remote logging, use TFLog as you would use printf. These logs will be sent to the server,
- * but will not appear in the console.
- */
 #if __cplusplus
 extern "C" {
 #endif
 	
-	void TFLog(NSString *format, ...) __attribute__((format(__NSString__, 1, 2)));
-	void TFLogv(NSString *format, va_list arg_list);
+/**
+ * Remote logging, use TFLog as you would use printf. These logs will be sent to the server,
+ * but will not appear in the console.
+ *
+ * @param format sprintf-like format for the arguments that follow
+ */
+void TFLog(NSString *format, ...) __attribute__((format(__NSString__, 1, 2)));
+
+/**
+ * Remote logging, use TFLogv as you would use printfv. These logs will be sent to the server,
+ * but will not appear in the console.
+ *
+ * @param format sprintf-like format for the arguments that follow
+ * @param arg_list list of arguments
+ */
+void TFLogv(NSString *format, va_list arg_list);
 	
 #if __cplusplus
 }
 #endif
-
-@end
 
 extern NSString *const TFSDKIdentityTraitNameKey;
 extern NSString *const TFSDKIdentityTraitEmailAddressKey;
