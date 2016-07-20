@@ -20,5 +20,5 @@ android {
 
 dependencies {
     compile 'com.facebook.react:react-native:0.20.1'
-    compile 'testfairy:testfairy-android-sdk:1.2.10'
+    compile 'testfairy:testfairy-android-sdk:1.3.2'
 }
