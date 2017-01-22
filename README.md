@@ -1,7 +1,7 @@
 TestFairyBridge
 ===============
 For class reference, installation and more information, please visit 
-[React-Native integration document](http://docs.testfairy.com/Integrations/React_Native.html
+[React-Native integration document](http://docs.testfairy.com/Platforms/React_Native.html
 ) on TestFairy.
 
 License
