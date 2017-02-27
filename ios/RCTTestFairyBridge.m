@@ -1,7 +1,7 @@
 #import "RCTTestFairyBridge.h"
-#import "RCTLog.h"
-#import "RCTConvert.h"
-#import "RCTUIManager.h"
+#import <React/RCTConvert.h>
+#import <React/RCTLog.h>
+#import <React/RCTUIManager.h>
 #import "TestFairy.h"
 
 @implementation RCTTestFairyBridge
