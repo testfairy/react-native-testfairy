@@ -98,6 +98,30 @@ class TestFairy {
 	static hideView(viewTag) {
 		TestFairyBridge.hideView(findNodeHandle(viewTag));
 	}
+
+	/**
+	 * Change the server endpoint for use with on-premise hosting. Please
+	 * contact support or sales for more information. Must be called before begin
+	 *
+	 * @param serverOverride server address for use with TestFairy
+	 */
+	static setServerEndpoint(url) {
+		TestFairyBridge.setServerEndpoint(url);
+	}
+
+
+	/**
+	 * Remote logging, use log as you would use console.log. These logs will be sent to the server.
+	 */
+	static log(message) {
+		TestFairyBridge.log(message);
+	}
+}
+
+var _testfairyConsoleLog = console.log;
+console.log = function(message) {
+	_testfairyConsoleLog(message);
+	TestFairy.log(message);
 }
 
 module.exports = TestFairy;

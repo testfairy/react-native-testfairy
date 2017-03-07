@@ -112,6 +112,26 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void setServerEndpoint(final String url) {
+        runOnUi(new Runnable() {
+            @Override
+            public void run() {
+                TestFairy.setServerEndpoint(url);
+            }
+        });
+    }
+
+    @ReactMethod
+    public void log(final String message) {
+        runOnUi(new Runnable() {
+            @Override
+            public void run() {
+                TestFairy.log("TFReactNative", message);
+            }
+        });
+    }
+
+    @ReactMethod
     public void sessionUrl(final Callback callback) {
         runOnUi(new Runnable() {
             @Override

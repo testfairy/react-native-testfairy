@@ -70,6 +70,18 @@ RCT_EXPORT_METHOD(version:(RCTResponseSenderBlock)callback) {
 	});
 }
 
+RCT_EXPORT_METHOD(setServerEndpoint:(NSString *)url) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[TestFairy setServerEndpoint:url];
+	});
+}
+
+RCT_EXPORT_METHOD(log:(NSString *)message) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		TFLog(@"%@", message);
+	});
+}
+
 RCT_EXPORT_METHOD(hideView:(nonnull NSNumber *)reactTag) {
 	dispatch_async(_bridge.uiManager.methodQueue, ^{
 		[_bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
