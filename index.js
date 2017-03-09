@@ -114,14 +114,14 @@ class TestFairy {
 	 * Remote logging, use log as you would use console.log. These logs will be sent to the server.
 	 */
 	static log(message) {
-		TestFairyBridge.log(message);
+		TestFairyBridge.log(JSON.stringify(message));
 	}
 }
 
 var _testfairyConsoleLog = console.log;
 console.log = function(message) {
 	_testfairyConsoleLog(message);
-	TestFairy.log(JSON.stringify(message));
+	TestFairy.log(message);
 }
 
 module.exports = TestFairy;
