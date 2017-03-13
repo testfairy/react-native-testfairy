@@ -118,10 +118,10 @@ class TestFairy {
 	}
 }
 
-var _testfairyConsoleLog = console.log;
-console.log = function(message) {
-	_testfairyConsoleLog(message);
-	TestFairy.log(message);
-}
+// var _testfairyConsoleLog = console.log;
+// console.log = function(message) {
+// 	_testfairyConsoleLog(message);
+// 	TestFairy.log(message);
+// }
 
 module.exports = TestFairy;
