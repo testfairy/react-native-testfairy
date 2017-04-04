@@ -153,6 +153,16 @@
  * @param name logic name of current screen
  */
 + (void)setScreenName:(NSString *)name;
+
+/**
+ * Stops the current session recording. Unlike 'pause', when
+ * calling 'resume', a new session will be created and will be
+ * linked to the previous recording. Useful if you want short
+ * session recordings of specific use-cases of the app. Hidden 
+ * views and user identity will be applied to the new session 
+ * as well, if started. 
+ */
++ (void)stop;
 @end
 
 #if __cplusplus
