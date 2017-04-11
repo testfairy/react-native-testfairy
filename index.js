@@ -116,6 +116,30 @@ class TestFairy {
 	static log(message) {
 		TestFairyBridge.log(JSON.stringify(message));
 	}
+
+	static setScreenName(name) {
+		TestFairyBridge.setScreenName(name);
+	}
+
+	static stop() {
+		TestFairyBridge.stop();
+	}
+
+	static setUserId(userId) {
+		TestFairyBridge.setUserId(userId);
+	}
+
+	static setAttribute(key, value) {
+		TestFairyBridge.setAttribute(key, value);
+	}
+
+	static pushFeedbackController() {
+		TestFairyBridge.pushFeedbackController();
+	}
+
+	static hideWebViewElements(selector) {
+		TestFairyBridge.hideWebViewElements(selector);
+	}
 }
 
 // var _testfairyConsoleLog = console.log;

@@ -82,6 +82,16 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void pushFeedbackController() {
+        runOnUi(new Runnable() {
+            @Override
+            public void run() {
+                Log.i("TestFairyModule", "Android does not support pushing a feedback controller");
+            }
+        });
+    }
+
+    @ReactMethod
     public void resume() {
         runOnUi(new Runnable() {
             @Override
@@ -96,7 +106,17 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
         runOnUi(new Runnable() {
             @Override
             public void run() {
-                TestFairy.addCheckpoint(checkpoint);
+                TestFairy.addEvent(checkpoint);
+            }
+        });
+    }
+
+    @ReactMethod
+    public void hideWebViewElements(final String cssSelector) {
+        runOnUi(new Runnable() {
+            @Override
+            public void run() {
+                Log.i("TestFairyModule", "Android does not support hiding web view elements");
             }
         });
     }
@@ -147,6 +167,46 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
             @Override
             public void run() {
                 callback.invoke(TestFairy.getSessionUrl());
+            }
+        });
+    }
+
+    @ReactMethod
+    public void setScreenName(final String name) {
+        runOnUi(new Runnable() {
+            @Override
+            public void run() {
+                TestFairy.setScreenName(name);
+            }
+        });
+    }
+
+    @ReactMethod
+    public void stop() {
+        runOnUi(new Runnable() {
+            @Override
+            public void run() {
+                TestFairy.stop();
+            }
+        });
+    }
+
+    @ReactMethod
+    public void setUserId(final String userId) {
+        runOnUi(new Runnable() {
+            @Override
+            public void run() {
+                TestFairy.setUserId(userId);
+            }
+        });
+    }
+
+    @ReactMethod
+    public void setAttribute(final String key, final String value) {
+        runOnUi(new Runnable() {
+            @Override
+            public void run() {
+                TestFairy.setAttribute(key, value);
             }
         });
     }

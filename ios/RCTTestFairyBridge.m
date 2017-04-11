@@ -82,6 +82,42 @@ RCT_EXPORT_METHOD(log:(NSString *)message) {
 	});
 }
 
+RCT_EXPORT_METHOD(setScreenName:(NSString *)name) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[TestFairy setScreenName:name];
+	});
+}
+
+RCT_EXPORT_METHOD(stop) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[TestFairy stop];
+	});
+}
+
+RCT_EXPORT_METHOD(pushFeedbackController) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[TestFairy pushFeedbackController];
+	});
+}
+
+RCT_EXPORT_METHOD(setUserId:(NSString *)userId) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[TestFairy setUserId:userId];
+	});
+}
+
+RCT_EXPORT_METHOD(hideWebViewElements:(NSString *)cssSelector) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[TestFairy hideWebViewElements:cssSelector];
+	});
+}
+
+RCT_EXPORT_METHOD(setAttribute:(NSString *)key value:(NSString *)value) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[TestFairy setAttribute:key withValue:value];
+	});
+}
+
 RCT_EXPORT_METHOD(hideView:(nonnull NSNumber *)reactTag) {
 	dispatch_async(_bridge.uiManager.methodQueue, ^{
 		[_bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
