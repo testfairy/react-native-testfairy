@@ -1,6 +1,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#define TF_DEPRECATED(x)  __attribute__ ((deprecated(x)))
+
 @interface TestFairy: NSObject
 
 /**
@@ -93,7 +95,7 @@
  *
  * @param correlationId Id for the current session
  */
-+ (void)setCorrelationId:(NSString *)correlationId;
++ (void)setCorrelationId:(NSString *)correlationId TF_DEPRECATED("Please refer to setUser:");
 
 /**
  * Sets a correlation identifier for this session. This value can
@@ -103,7 +105,7 @@
  *
  * @param correlationId Id for the current session
  */
-+ (void)identify:(NSString *)correlationId;
++ (void)identify:(NSString *)correlationId TF_DEPRECATED("Please refer to setAttribute: and setUser:");
 
 /**
  * Sets a correlation identifier for this session. This value can
@@ -114,7 +116,7 @@
  * @param correlationId Id for the current session
  * @param traits Attributes and custom attributes to be associated with this session
  */
-+ (void)identify:(NSString *)correlationId traits:(NSDictionary *)traits;
++ (void)identify:(NSString *)correlationId traits:(NSDictionary *)traits TF_DEPRECATED("Please refer to setAttribute:");
 
 /**
  * Pauses the current session. This method stops recoding of
@@ -163,6 +165,27 @@
  * as well, if started. 
  */
 + (void)stop;
+
+/**
+ * Records a session level attribute which can be looked up via web dashboard.
+ *
+ * @param name The name of the attribute. Cannot be nil.
+ * @param value The value associated with the attribute. Cannot be nil.
+ * @return YES if successfully set attribute value, NO if failed with error in log.
+ *
+ * @note The SDK limits you to storing 64 named attributes. Adding more than 64 will fail and return NO.
+ */
++ (BOOL)setAttribute:(NSString *)key withValue:(NSString *)value;
+
+/**
+ * Records a user identified as an attribute. We recommend passing values such as
+ * email, phone number, or user id that your app may use.
+ *
+ * @param userId The identifying user. Cannot be nil.
+ *
+ */
++ (void)setUserId:(NSString *)userId;
+
 @end
 
 #if __cplusplus
@@ -203,4 +226,4 @@ extern NSString *const TestFairyDidShakeDevice;
 extern NSString *const TestFairyWillProvideFeedback;
 extern NSString *const TestFairyDidCancelFeedback;
 extern NSString *const TestFairyDidSendFeedback;
-
+extern NSString *const TestFairyDidSendFeedback;
