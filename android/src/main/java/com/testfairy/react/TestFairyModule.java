@@ -1,11 +1,13 @@
 package com.testfairy.react;
 
 import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 import android.view.View;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
@@ -16,6 +18,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 
 import com.testfairy.TestFairy;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +39,14 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
         runOnUi(new Runnable() {
             @Override
             public void run() {
-                TestFairy.begin(getReactApplicationContext(), appKey);
+                Context context = getReactApplicationContext();
+                try {
+                    Method method = ReactContext.class.getDeclaredMethod("getCurrentActivity", null);
+                    method.setAccessible(true);
+                    context = (Context) method.invoke(context, null);
+                } catch (Exception ignored) {}
+
+                TestFairy.begin(context, appKey);
             }
         });
     }
