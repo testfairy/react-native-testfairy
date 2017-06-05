@@ -226,4 +226,3 @@ extern NSString *const TestFairyDidShakeDevice;
 extern NSString *const TestFairyWillProvideFeedback;
 extern NSString *const TestFairyDidCancelFeedback;
 extern NSString *const TestFairyDidSendFeedback;
-extern NSString *const TestFairyDidSendFeedback;
