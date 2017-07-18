@@ -186,6 +186,12 @@
  */
 + (void)setUserId:(NSString *)userId;
 
+/**
+ * Remote logging. These logs will be sent to the server,
+ * but will not appear in the console.
+ */
+
++ (void)log:(NSString *)message;
 @end
 
 #if __cplusplus
