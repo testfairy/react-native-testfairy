@@ -1,6 +1,6 @@
 {
   "name": "react-native-testfairy",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "description": "TestFairy for React Native",
   "author": "Gil Megidish",
   "main": "./index.js",
