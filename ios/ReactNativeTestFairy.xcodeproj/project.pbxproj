@@ -1,0 +1,318 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 48;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		42108ED81FE1ADB4008DF6BD /* libTestFairy.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 42108EC61FE1AC58008DF6BD /* libTestFairy.a */; };
+		42108ED91FE1ADB9008DF6BD /* RCTTestFairyBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 42108EC51FE1AC58008DF6BD /* RCTTestFairyBridge.m */; };
+		42108EE01FE1ADD4008DF6BD /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42108EDB1FE1ADD4008DF6BD /* SystemConfiguration.framework */; };
+		42108EE11FE1ADD4008DF6BD /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42108EDC1FE1ADD4008DF6BD /* CoreMedia.framework */; };
+		42108EE21FE1ADD4008DF6BD /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42108EDD1FE1ADD4008DF6BD /* CoreMotion.framework */; };
+		42108EE31FE1ADD4008DF6BD /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42108EDE1FE1ADD4008DF6BD /* OpenGLES.framework */; };
+		42108EE41FE1ADD4008DF6BD /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42108EDF1FE1ADD4008DF6BD /* AVFoundation.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		42108ECC1FE1AD83008DF6BD /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		42108EC51FE1AC58008DF6BD /* RCTTestFairyBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTTestFairyBridge.m; sourceTree = "<group>"; };
+		42108EC61FE1AC58008DF6BD /* libTestFairy.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFairy.a; sourceTree = "<group>"; };
+		42108EC71FE1AC58008DF6BD /* TestFairy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TestFairy.h; sourceTree = "<group>"; };
+		42108EC81FE1AC58008DF6BD /* RCTTestFairyBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTTestFairyBridge.h; sourceTree = "<group>"; };
+		42108EC91FE1AC58008DF6BD /* upload-dsym.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "upload-dsym.sh"; sourceTree = "<group>"; };
+		42108ECE1FE1AD83008DF6BD /* libReactNativeTestFairy.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libReactNativeTestFairy.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		42108EDB1FE1ADD4008DF6BD /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.2.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
+		42108EDC1FE1ADD4008DF6BD /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.2.sdk/System/Library/Frameworks/CoreMedia.framework; sourceTree = DEVELOPER_DIR; };
+		42108EDD1FE1ADD4008DF6BD /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.2.sdk/System/Library/Frameworks/CoreMotion.framework; sourceTree = DEVELOPER_DIR; };
+		42108EDE1FE1ADD4008DF6BD /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.2.sdk/System/Library/Frameworks/OpenGLES.framework; sourceTree = DEVELOPER_DIR; };
+		42108EDF1FE1ADD4008DF6BD /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.2.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		42108ECB1FE1AD83008DF6BD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				42108EE01FE1ADD4008DF6BD /* SystemConfiguration.framework in Frameworks */,
+				42108EE11FE1ADD4008DF6BD /* CoreMedia.framework in Frameworks */,
+				42108EE21FE1ADD4008DF6BD /* CoreMotion.framework in Frameworks */,
+				42108EE31FE1ADD4008DF6BD /* OpenGLES.framework in Frameworks */,
+				42108EE41FE1ADD4008DF6BD /* AVFoundation.framework in Frameworks */,
+				42108ED81FE1ADB4008DF6BD /* libTestFairy.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		42108EBE1FE1ABF9008DF6BD = {
+			isa = PBXGroup;
+			children = (
+				42108EC61FE1AC58008DF6BD /* libTestFairy.a */,
+				42108EC81FE1AC58008DF6BD /* RCTTestFairyBridge.h */,
+				42108EC51FE1AC58008DF6BD /* RCTTestFairyBridge.m */,
+				42108EC71FE1AC58008DF6BD /* TestFairy.h */,
+				42108EC91FE1AC58008DF6BD /* upload-dsym.sh */,
+				42108ECF1FE1AD83008DF6BD /* Products */,
+				42108EDA1FE1ADD4008DF6BD /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		42108ECF1FE1AD83008DF6BD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				42108ECE1FE1AD83008DF6BD /* libReactNativeTestFairy.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		42108EDA1FE1ADD4008DF6BD /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				42108EDF1FE1ADD4008DF6BD /* AVFoundation.framework */,
+				42108EDC1FE1ADD4008DF6BD /* CoreMedia.framework */,
+				42108EDD1FE1ADD4008DF6BD /* CoreMotion.framework */,
+				42108EDE1FE1ADD4008DF6BD /* OpenGLES.framework */,
+				42108EDB1FE1ADD4008DF6BD /* SystemConfiguration.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		42108ECD1FE1AD83008DF6BD /* ReactNativeTestFairy */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 42108ED71FE1AD83008DF6BD /* Build configuration list for PBXNativeTarget "ReactNativeTestFairy" */;
+			buildPhases = (
+				42108ECA1FE1AD83008DF6BD /* Sources */,
+				42108ECB1FE1AD83008DF6BD /* Frameworks */,
+				42108ECC1FE1AD83008DF6BD /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ReactNativeTestFairy;
+			productName = ReactNativeTestFairy;
+			productReference = 42108ECE1FE1AD83008DF6BD /* libReactNativeTestFairy.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		42108EBF1FE1ABF9008DF6BD /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0920;
+				TargetAttributes = {
+					42108ECD1FE1AD83008DF6BD = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 42108EC21FE1ABF9008DF6BD /* Build configuration list for PBXProject "ReactNativeTestFairy" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 42108EBE1FE1ABF9008DF6BD;
+			productRefGroup = 42108ECF1FE1AD83008DF6BD /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				42108ECD1FE1AD83008DF6BD /* ReactNativeTestFairy */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		42108ECA1FE1AD83008DF6BD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				42108ED91FE1ADB9008DF6BD /* RCTTestFairyBridge.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		42108EC31FE1ABF9008DF6BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		42108EC41FE1ABF9008DF6BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		42108ED51FE1AD83008DF6BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = SYZXBEEWGP;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		42108ED61FE1AD83008DF6BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = SYZXBEEWGP;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		42108EC21FE1ABF9008DF6BD /* Build configuration list for PBXProject "ReactNativeTestFairy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				42108EC31FE1ABF9008DF6BD /* Debug */,
+				42108EC41FE1ABF9008DF6BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		42108ED71FE1AD83008DF6BD /* Build configuration list for PBXNativeTarget "ReactNativeTestFairy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				42108ED51FE1AD83008DF6BD /* Debug */,
+				42108ED61FE1AD83008DF6BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 42108EBF1FE1ABF9008DF6BD /* Project object */;
+}
