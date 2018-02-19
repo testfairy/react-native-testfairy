@@ -7,17 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		42108ED81FE1ADB4008DF6BD /* libTestFairy.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 42108EC61FE1AC58008DF6BD /* libTestFairy.a */; };
-		42108ED91FE1ADB9008DF6BD /* RCTTestFairyBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 42108EC51FE1AC58008DF6BD /* RCTTestFairyBridge.m */; };
-		42108EE01FE1ADD4008DF6BD /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42108EDB1FE1ADD4008DF6BD /* SystemConfiguration.framework */; };
-		42108EE11FE1ADD4008DF6BD /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42108EDC1FE1ADD4008DF6BD /* CoreMedia.framework */; };
-		42108EE21FE1ADD4008DF6BD /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42108EDD1FE1ADD4008DF6BD /* CoreMotion.framework */; };
-		42108EE31FE1ADD4008DF6BD /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42108EDE1FE1ADD4008DF6BD /* OpenGLES.framework */; };
-		42108EE41FE1ADD4008DF6BD /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42108EDF1FE1ADD4008DF6BD /* AVFoundation.framework */; };
+		42959849203B477A00E34882 /* RCTTestFairyBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 42959844203B477A00E34882 /* RCTTestFairyBridge.m */; };
+		4295984A203B477A00E34882 /* libTestFairy.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 42959845203B477A00E34882 /* libTestFairy.a */; };
+		42959851203B47E800E34882 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4295984C203B47E800E34882 /* SystemConfiguration.framework */; };
+		42959852203B47E800E34882 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4295984D203B47E800E34882 /* CoreMedia.framework */; };
+		42959853203B47E800E34882 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4295984E203B47E800E34882 /* CoreMotion.framework */; };
+		42959854203B47E800E34882 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4295984F203B47E800E34882 /* OpenGLES.framework */; };
+		42959855203B47E800E34882 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42959850203B47E800E34882 /* AVFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		42108ECC1FE1AD83008DF6BD /* CopyFiles */ = {
+		42959836203B471F00E34882 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "include/$(PRODUCT_NAME)";
@@ -29,65 +29,65 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		42108EC51FE1AC58008DF6BD /* RCTTestFairyBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTTestFairyBridge.m; sourceTree = "<group>"; };
-		42108EC61FE1AC58008DF6BD /* libTestFairy.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFairy.a; sourceTree = "<group>"; };
-		42108EC71FE1AC58008DF6BD /* TestFairy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TestFairy.h; sourceTree = "<group>"; };
-		42108EC81FE1AC58008DF6BD /* RCTTestFairyBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTTestFairyBridge.h; sourceTree = "<group>"; };
-		42108EC91FE1AC58008DF6BD /* upload-dsym.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "upload-dsym.sh"; sourceTree = "<group>"; };
-		42108ECE1FE1AD83008DF6BD /* libReactNativeTestFairy.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libReactNativeTestFairy.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		42108EDB1FE1ADD4008DF6BD /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.2.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
-		42108EDC1FE1ADD4008DF6BD /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.2.sdk/System/Library/Frameworks/CoreMedia.framework; sourceTree = DEVELOPER_DIR; };
-		42108EDD1FE1ADD4008DF6BD /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.2.sdk/System/Library/Frameworks/CoreMotion.framework; sourceTree = DEVELOPER_DIR; };
-		42108EDE1FE1ADD4008DF6BD /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.2.sdk/System/Library/Frameworks/OpenGLES.framework; sourceTree = DEVELOPER_DIR; };
-		42108EDF1FE1ADD4008DF6BD /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.2.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
+		42959838203B471F00E34882 /* libReactNativeTestFairy.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libReactNativeTestFairy.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		42959844203B477A00E34882 /* RCTTestFairyBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTestFairyBridge.m; sourceTree = "<group>"; };
+		42959845203B477A00E34882 /* libTestFairy.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFairy.a; sourceTree = "<group>"; };
+		42959846203B477A00E34882 /* TestFairy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFairy.h; sourceTree = "<group>"; };
+		42959847203B477A00E34882 /* RCTTestFairyBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTestFairyBridge.h; sourceTree = "<group>"; };
+		42959848203B477A00E34882 /* upload-dsym.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "upload-dsym.sh"; sourceTree = "<group>"; };
+		4295984C203B47E800E34882 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		4295984D203B47E800E34882 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		4295984E203B47E800E34882 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		4295984F203B47E800E34882 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		42959850203B47E800E34882 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		42108ECB1FE1AD83008DF6BD /* Frameworks */ = {
+		42959835203B471F00E34882 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				42108EE01FE1ADD4008DF6BD /* SystemConfiguration.framework in Frameworks */,
-				42108EE11FE1ADD4008DF6BD /* CoreMedia.framework in Frameworks */,
-				42108EE21FE1ADD4008DF6BD /* CoreMotion.framework in Frameworks */,
-				42108EE31FE1ADD4008DF6BD /* OpenGLES.framework in Frameworks */,
-				42108EE41FE1ADD4008DF6BD /* AVFoundation.framework in Frameworks */,
-				42108ED81FE1ADB4008DF6BD /* libTestFairy.a in Frameworks */,
+				42959851203B47E800E34882 /* SystemConfiguration.framework in Frameworks */,
+				42959852203B47E800E34882 /* CoreMedia.framework in Frameworks */,
+				42959853203B47E800E34882 /* CoreMotion.framework in Frameworks */,
+				42959854203B47E800E34882 /* OpenGLES.framework in Frameworks */,
+				42959855203B47E800E34882 /* AVFoundation.framework in Frameworks */,
+				4295984A203B477A00E34882 /* libTestFairy.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		42108EBE1FE1ABF9008DF6BD = {
+		4295982F203B471F00E34882 = {
 			isa = PBXGroup;
 			children = (
-				42108EC61FE1AC58008DF6BD /* libTestFairy.a */,
-				42108EC81FE1AC58008DF6BD /* RCTTestFairyBridge.h */,
-				42108EC51FE1AC58008DF6BD /* RCTTestFairyBridge.m */,
-				42108EC71FE1AC58008DF6BD /* TestFairy.h */,
-				42108EC91FE1AC58008DF6BD /* upload-dsym.sh */,
-				42108ECF1FE1AD83008DF6BD /* Products */,
-				42108EDA1FE1ADD4008DF6BD /* Frameworks */,
+				42959845203B477A00E34882 /* libTestFairy.a */,
+				42959847203B477A00E34882 /* RCTTestFairyBridge.h */,
+				42959844203B477A00E34882 /* RCTTestFairyBridge.m */,
+				42959846203B477A00E34882 /* TestFairy.h */,
+				42959848203B477A00E34882 /* upload-dsym.sh */,
+				42959839203B471F00E34882 /* Products */,
+				4295984B203B47E800E34882 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
-		42108ECF1FE1AD83008DF6BD /* Products */ = {
+		42959839203B471F00E34882 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				42108ECE1FE1AD83008DF6BD /* libReactNativeTestFairy.a */,
+				42959838203B471F00E34882 /* libReactNativeTestFairy.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		42108EDA1FE1ADD4008DF6BD /* Frameworks */ = {
+		4295984B203B47E800E34882 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				42108EDF1FE1ADD4008DF6BD /* AVFoundation.framework */,
-				42108EDC1FE1ADD4008DF6BD /* CoreMedia.framework */,
-				42108EDD1FE1ADD4008DF6BD /* CoreMotion.framework */,
-				42108EDE1FE1ADD4008DF6BD /* OpenGLES.framework */,
-				42108EDB1FE1ADD4008DF6BD /* SystemConfiguration.framework */,
+				42959850203B47E800E34882 /* AVFoundation.framework */,
+				4295984D203B47E800E34882 /* CoreMedia.framework */,
+				4295984E203B47E800E34882 /* CoreMotion.framework */,
+				4295984F203B47E800E34882 /* OpenGLES.framework */,
+				4295984C203B47E800E34882 /* SystemConfiguration.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -95,13 +95,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		42108ECD1FE1AD83008DF6BD /* ReactNativeTestFairy */ = {
+		42959837203B471F00E34882 /* ReactNativeTestFairy */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 42108ED71FE1AD83008DF6BD /* Build configuration list for PBXNativeTarget "ReactNativeTestFairy" */;
+			buildConfigurationList = 42959841203B471F00E34882 /* Build configuration list for PBXNativeTarget "ReactNativeTestFairy" */;
 			buildPhases = (
-				42108ECA1FE1AD83008DF6BD /* Sources */,
-				42108ECB1FE1AD83008DF6BD /* Frameworks */,
-				42108ECC1FE1AD83008DF6BD /* CopyFiles */,
+				42959834203B471F00E34882 /* Sources */,
+				42959835203B471F00E34882 /* Frameworks */,
+				42959836203B471F00E34882 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -109,65 +109,54 @@
 			);
 			name = ReactNativeTestFairy;
 			productName = ReactNativeTestFairy;
-			productReference = 42108ECE1FE1AD83008DF6BD /* libReactNativeTestFairy.a */;
+			productReference = 42959838203B471F00E34882 /* libReactNativeTestFairy.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		42108EBF1FE1ABF9008DF6BD /* Project object */ = {
+		42959830203B471F00E34882 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0920;
+				ORGANIZATIONNAME = TestFairy;
 				TargetAttributes = {
-					42108ECD1FE1AD83008DF6BD = {
+					42959837203B471F00E34882 = {
 						CreatedOnToolsVersion = 9.2;
 						ProvisioningStyle = Automatic;
 					};
 				};
 			};
-			buildConfigurationList = 42108EC21FE1ABF9008DF6BD /* Build configuration list for PBXProject "ReactNativeTestFairy" */;
+			buildConfigurationList = 42959833203B471F00E34882 /* Build configuration list for PBXProject "ReactNativeTestFairy" */;
 			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = 42108EBE1FE1ABF9008DF6BD;
-			productRefGroup = 42108ECF1FE1AD83008DF6BD /* Products */;
+			mainGroup = 4295982F203B471F00E34882;
+			productRefGroup = 42959839203B471F00E34882 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				42108ECD1FE1AD83008DF6BD /* ReactNativeTestFairy */,
+				42959837203B471F00E34882 /* ReactNativeTestFairy */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		42108ECA1FE1AD83008DF6BD /* Sources */ = {
+		42959834203B471F00E34882 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				42108ED91FE1ADB9008DF6BD /* RCTTestFairyBridge.m in Sources */,
+				42959849203B477A00E34882 /* RCTTestFairyBridge.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		42108EC31FE1ABF9008DF6BD /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-			};
-			name = Debug;
-		};
-		42108EC41FE1ABF9008DF6BD /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-			};
-			name = Release;
-		};
-		42108ED51FE1AD83008DF6BD /* Debug */ = {
+		4295983F203B471F00E34882 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -196,11 +185,9 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = SYZXBEEWGP;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -218,21 +205,13 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)",
-				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		42108ED61FE1AD83008DF6BD /* Release */ = {
+		42959840203B471F00E34882 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -261,11 +240,9 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "";
-				CODE_SIGN_STYLE = Automatic;
-				COPY_PHASE_STRIP = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = SYZXBEEWGP;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -277,42 +254,64 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		42959842203B471F00E34882 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
-				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
+			};
+			name = Debug;
+		};
+		42959843203B471F00E34882 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		42108EC21FE1ABF9008DF6BD /* Build configuration list for PBXProject "ReactNativeTestFairy" */ = {
+		42959833203B471F00E34882 /* Build configuration list for PBXProject "ReactNativeTestFairy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				42108EC31FE1ABF9008DF6BD /* Debug */,
-				42108EC41FE1ABF9008DF6BD /* Release */,
+				4295983F203B471F00E34882 /* Debug */,
+				42959840203B471F00E34882 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		42108ED71FE1AD83008DF6BD /* Build configuration list for PBXNativeTarget "ReactNativeTestFairy" */ = {
+		42959841203B471F00E34882 /* Build configuration list for PBXNativeTarget "ReactNativeTestFairy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				42108ED51FE1AD83008DF6BD /* Debug */,
-				42108ED61FE1AD83008DF6BD /* Release */,
+				42959842203B471F00E34882 /* Debug */,
+				42959843203B471F00E34882 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 42108EBF1FE1ABF9008DF6BD /* Project object */;
+	rootObject = 42959830203B471F00E34882 /* Project object */;
 }
