@@ -17,6 +17,10 @@
  *
  * @param appToken Your key as given to you in your TestFairy account
  * @param options A dictionary of options controlling the current session
+ *        Options include
+ * 			- metrics: comma separated string of default metric options such as
+ * 				"cpu,memory,network-requests,shake,video,logs"
+ * 			- enableCrashReporter: @YES / @NO to enable crash handling. Default is @YES
  */
 + (void)begin:(NSString *)appToken withOptions:(NSDictionary *)options;
 
@@ -169,7 +173,7 @@
 /**
  * Records a session level attribute which can be looked up via web dashboard.
  *
- * @param name The name of the attribute. Cannot be nil.
+ * @param key The name of the attribute. Cannot be nil.
  * @param value The value associated with the attribute. Cannot be nil.
  * @return YES if successfully set attribute value, NO if failed with error in log.
  *
@@ -192,6 +196,17 @@
  */
 
 + (void)log:(NSString *)message;
+
+/**
+ * Attach a file to the session. A maximum of 5 files may be attached. Each file cannot be more
+ * than 15 mb in size. In order to see if the file successfully uploads or fails, please view
+ * the logs.
+ *
+ * @param file path to file on disk.
+ *
+ */
++ (void)attachFile:(NSURL *)file;
+
 @end
 
 #if __cplusplus
