@@ -68,17 +68,23 @@ class TestFairy {
 	}
 
 	/**
-	 * Marks a checkpoint in session. Use this text to tag a session
-	 * with a checkpoint name. Later you can filter sessions where your
-	 * user passed through this checkpoint, for bettering understanding
-	 * user experience and behavior.
-	 *
-	 * @param name The checkpoint name
+	 * @deprecated use {@link #addEvent(String)} instead.
 	 */
 	static checkpoint(name) {
 		TestFairyBridge.checkpoint(name);
 	}
 
+	/**
+	 * Marks an event in session. Use this text to tag a session with an event name. Later you can filter
+	 * sessions where your user passed through this checkpoint, to better understanding user experience
+	 * and behavior.
+	 *
+	 * @param eventName String
+	 */
+	static addEvent(name) {
+		TestFairyBridge.checkpoint(name);
+	}
+	
 	/**
 	 * Send a feedback on behalf of the user. Call when using a in-house
 	 * feedback view controller with a custom design and feel. Feedback will
@@ -108,7 +114,6 @@ class TestFairy {
 	static setServerEndpoint(url) {
 		TestFairyBridge.setServerEndpoint(url);
 	}
-
 
 	/**
 	 * Remote logging, use log as you would use console.log. These logs will be sent to the server.
