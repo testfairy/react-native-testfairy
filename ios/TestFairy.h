@@ -84,12 +84,20 @@
 /**
  * Marks a checkpoint in session. Use this text to tag a session
  * with a checkpoint name. Later you can filter sessions where your
- * user passed through this checkpoint, for bettering understanding
- * user experience and behavior.
+ * user passed through this checkpoint.
  *
  * @param name The checkpoint name
  */
-+ (void)checkpoint:(NSString *)name;
++ (void)checkpoint:(NSString *)name TF_DEPRECATED("Please refer to addUserEvent:");
+
+/**
+ * Marks an event in session timeline. Use this text to tag a session
+ * with an event name. Later you can filter sessions where your
+ * user passed through this event.
+ *
+ * @param name The event name
+ */
++ (void)addEvent:(NSString *)name;
 
 /**
  * Sets a correlation identifier for this session. This value can
