@@ -88,7 +88,7 @@
  *
  * @param name The checkpoint name
  */
-+ (void)checkpoint:(NSString *)name TF_DEPRECATED("Please refer to addUserEvent:");
++ (void)checkpoint:(NSString *)name TF_DEPRECATED("Please refer to addEvent:");
 
 /**
  * Marks an event in session timeline. Use this text to tag a session
