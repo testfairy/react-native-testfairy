@@ -65,7 +65,7 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
             }
         });
     }
-    
+
     @ReactMethod
     public void takeScreenshot() {
         Log.i("TestFairyModule", "Android does not support taking screen shots");
@@ -86,7 +86,7 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
         runOnUi(new Runnable() {
             @Override
             public void run() {
-                Log.i("TestFairyModule", "Android does not support pushing a feedback controller");
+                TestFairy.showFeedbackForm();
             }
         });
     }
@@ -223,7 +223,7 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
                 View view = activity.findViewById(tag);
                 if (view == null)
                     return;
-                
+
                 TestFairy.hideView(view);
             }
         });
@@ -293,7 +293,7 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
 
         return input;
     }
-    
+
     private void runOnUi(Runnable runnable) {
         UiThreadUtil.runOnUiThread(runnable);
     }
