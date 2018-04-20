@@ -216,15 +216,7 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
         runOnUi(new Runnable() {
             @Override
             public void run() {
-                Activity activity = getCurrentActivity();
-                if (activity == null)
-                    return;
-
-                View view = activity.findViewById(tag);
-                if (view == null)
-                    return;
-
-                TestFairy.hideView(view);
+                TestFairy.hideView(tag);
             }
         });
     }
