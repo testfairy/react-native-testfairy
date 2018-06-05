@@ -222,6 +222,12 @@
  */
 + (void)attachFile:(NSURL *)file;
 
+/**
+ * Query to see if the previous session crashed. Can be called before or
+ * after calling begin.
+ */
++ (BOOL)didLastSessionCrash;
+
 @end
 
 #if __cplusplus
