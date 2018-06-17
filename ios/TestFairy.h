@@ -228,6 +228,80 @@
  */
 + (BOOL)didLastSessionCrash;
 
+/**
+ * Enables the ability to capture crashes. TestFairy
+ * crash handler is installed by default. Once installed
+ * it cannot be uninstalled. Must be called before begin.
+ */
++ (void)enableCrashHandler;
+
+/**
+ * Disables the ability to capture crashes. TestFairy
+ * crash handler is installed by default. Once installed
+ * it cannot be uninstalled. Must be called before begin.
+ */
++ (void)disableCrashHandler;
+
+/**
+ * Enables recording of a metric regardless of build settings.
+ * Valid values include "cpu", "memory", "logcat", "battery", "network-requests"
+ * A metric cannot be enabled and disabled at the same time, therefore
+ * if a metric is also disabled, the last call to enable to disable wins.
+ * Must be called be before begin.
+ */
++ (void)enableMetric:(NSString *)metric;
+
+/**
+ * Disables recording of a metric regardless of build settings.
+ * Valid values include "cpu", "memory", "logcat", "battery", "network-requests"
+ * A metric cannot be enabled and disabled at the same time, therefore
+ * if a metric is also disabled, the last call to enable to disable wins.
+ * Must be called be before begin.
+ */
++ (void)disableMetric:(NSString *)metric;
+
+/**
+ * Enables the ability to capture video recording regardless of build settings.
+ * Valid values for policy include "always" and "wifi"
+ * Valid values for quality include "high", "low", "medium"
+ * Values for fps must be between 0.1 and 2.0. Value will be rounded to
+ * the nearest frame.
+ */
++ (void)enableVideo:(NSString *)policy quality:(NSString*)quality framesPerSecond:(float)fps;
+
+/**
+ * Disables the ability to capture video recording. Must be
+ * called before begin.
+ */
++ (void)disableVideo;
+
+/**
+ * Enables the ability to present the feedback form
+ * based on the method given. Valid values include
+ * "shake", "screenshot" or "shake|screenshot". If an
+ * unrecognized method is passed, the value defined in
+ * the build settings will be used. Must be called before
+ * begin.
+ */
++ (void)enableFeedbackForm:(NSString*) method;
+
+/**
+ * Disables the ability to present users with feedback when
+ * devices is shaken, or if a screenshot is taken. Must be called
+ * before begin.
+ */
++ (void)disableFeedbackForm;
+
+/**
+ * Sets the maximum recording time. Minimum value is 60 seconds,
+ * else the value defined in the build settings will be used. The
+ * maximum value is the lowest value between this value and the
+ * value defined in the build settings.
+ * Time is rounded to the nearest minute.
+ * Must be called before begin.
+ */
++ (void)setMaxSessionLength:(float)seconds;
+
 @end
 
 #if __cplusplus
