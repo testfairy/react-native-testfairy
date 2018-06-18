@@ -221,6 +221,96 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
         });
     }
 
+		@ReactMethod
+    public void enableCrashHandler() {
+			runOnUi(new Runnable() {
+					@Override
+					public void run() {
+							TestFairy.enableCrashHandler();
+					}
+			});
+		}
+
+		@ReactMethod
+    public void disableCrashHandler() {
+			runOnUi(new Runnable() {
+					@Override
+					public void run() {
+							TestFairy.disableCrashHandler();
+					}
+			});
+		}
+
+		@ReactMethod
+    public void enableMetric(final String metric) {
+			runOnUi(new Runnable() {
+					@Override
+					public void run() {
+							TestFairy.enableMetric(metric);
+					}
+			});
+		}
+
+		@ReactMethod
+    public void disableMetric(final String metric) {
+			runOnUi(new Runnable() {
+					@Override
+					public void run() {
+							TestFairy.disableMetric(metric);
+					}
+			});
+		}
+
+		@ReactMethod
+    public void enableVideo(final String policy, final String quality, final float framesPerSecond) {
+			runOnUi(new Runnable() {
+					@Override
+					public void run() {
+							TestFairy.enableVideo(policy, quality, ramesPerSecond);
+					}
+			});
+		}
+
+		@ReactMethod
+    public void disableVideo() {
+			runOnUi(new Runnable() {
+					@Override
+					public void run() {
+							TestFairy.disableVideo();
+					}
+			});
+		}
+
+		@ReactMethod
+    public void enableFeedbackForm(final String method) {
+			runOnUi(new Runnable() {
+					@Override
+					public void run() {
+							TestFairy.enableFeedbackForm(method);
+					}
+			});
+		}
+
+		@ReactMethod
+    public void disableFeedbackForm() {
+			runOnUi(new Runnable() {
+					@Override
+					public void run() {
+							TestFairy.disableFeedbackForm();
+					}
+			});
+		}
+
+		@ReactMethod
+    public void setMaxSessionLength(final float seconds) {
+			runOnUi(new Runnable() {
+					@Override
+					public void run() {
+							TestFairy.setMaxSessionLength(seconds);
+					}
+			});
+		}
+
     private Map<String, Object> convertMap(ReadableMap map) {
         Map<String, Object> input = new HashMap<String, Object>();
         ReadableMapKeySetIterator iterator = map.keySetIterator();

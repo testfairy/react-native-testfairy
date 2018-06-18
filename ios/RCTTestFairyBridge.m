@@ -118,6 +118,60 @@ RCT_EXPORT_METHOD(setAttribute:(NSString *)key value:(NSString *)value) {
 	});
 }
 
+RCT_EXPORT_METHOD(enableCrashHandler) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[TestFairy enableCrashHandler];
+	});
+}
+
+RCT_EXPORT_METHOD(disableCrashHandler) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[TestFairy disableCrashHandler];
+	});
+}
+
+RCT_EXPORT_METHOD(enableMetric:(NSString *)metric) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[TestFairy enableMetric:metric];
+	});
+}
+
+RCT_EXPORT_METHOD(disableMetric:(NSString *)metric) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[TestFairy disableMetric:metric];
+	});
+}
+
+RCT_EXPORT_METHOD(enableVideo:(NSString *)policy quality:(NSString*)quality framesPerSecond:(float)fps) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[TestFairy enableVideo:policy quality:quality framesPerSecond:fps];
+	});
+}
+
+RCT_EXPORT_METHOD(disableVideo) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[TestFairy disableVideo];
+	});
+}
+
+RCT_EXPORT_METHOD(enableFeedbackForm:(NSString*) method) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[TestFairy enableFeedbackForm:method];
+	});
+}
+
+RCT_EXPORT_METHOD(disableFeedbackForm) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[TestFairy disableFeedbackForm];
+	});
+}
+
+RCT_EXPORT_METHOD(setMaxSessionLength:(float)seconds) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[TestFairy setMaxSessionLength:seconds];
+	});
+}
+
 RCT_EXPORT_METHOD(hideView:(nonnull NSNumber *)reactTag) {
 	dispatch_async(_bridge.uiManager.methodQueue, ^{
 		[_bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
