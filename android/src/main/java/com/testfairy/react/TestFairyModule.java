@@ -266,7 +266,7 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
 			runOnUi(new Runnable() {
 					@Override
 					public void run() {
-							TestFairy.enableVideo(policy, quality, ramesPerSecond);
+							TestFairy.enableVideo(policy, quality, framesPerSecond);
 					}
 			});
 		}

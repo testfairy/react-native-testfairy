@@ -204,12 +204,12 @@ class TestFairy {
 
 	/**
 	 * Enables recording of a metric regardless of build settings.
-	 * Valid values include "cpu", "memory", "logcat", "battery", "network-requests"
+	 * Valid values include 'cpu', 'memory', 'logcat', 'battery', 'network-requests'
 	 * A metric cannot be enabled and disabled at the same time, therefore
 	 * if a metric is also disabled, the last call to enable to disable wins.
 	 * Must be called be before begin.
 	 */
-	static enableMetric(String metric) {
+	static enableMetric(metric) {
 		TestFairyBridge.enableMetric(metric);
 	}
 
@@ -220,7 +220,7 @@ class TestFairy {
 	 * if a metric is also disabled, the last call to enable to disable wins.
 	 * Must be called be before begin.
 	 */
-	static disableMetric(String metric) {
+	static disableMetric(metric) {
 		TestFairyBridge.disableMetric(metric);
 	}
 
@@ -231,7 +231,7 @@ class TestFairy {
 	 * Values for fps must be between 0.1 and 2.0. Value will be rounded to
 	 * the nearest frame.
 	 */
-	static enableVideo(String policy, String quality, float framesPerSecond) {
+	static enableVideo(policy, quality, framesPerSecond) {
 		TestFairyBridge.enableVideo(policy, quality, framesPerSecond);
 	}
 
@@ -250,7 +250,7 @@ class TestFairy {
 	 * the value defined in the build settings will be
 	 * used. Must be called before begin.
 	 */
-	static enableFeedbackForm(String method) {
+	static enableFeedbackForm(method) {
 		TestFairyBridge.enableFeedbackForm(method);
 	}
 
@@ -271,7 +271,7 @@ class TestFairy {
 	 * Time is rounded to the nearest minute.
 	 * Must be called before begin.
 	 */
-	static setMaxSessionLength(float seconds) {
+	static setMaxSessionLength(seconds) {
 		TestFairyBridge.setMaxSessionLength(seconds);
 	}
 }
