@@ -267,7 +267,7 @@
  * Values for fps must be between 0.1 and 2.0. Value will be rounded to
  * the nearest frame.
  */
-+ (void)enableVideo:(NSString *)policy quality:(NSString*)quality framesPerSecond:(float)fps;
++ (void)enableVideo:(NSString *)policy quality:(NSString *)quality framesPerSecond:(float)fps;
 
 /**
  * Disables the ability to capture video recording. Must be
@@ -283,7 +283,7 @@
  * the build settings will be used. Must be called before
  * begin.
  */
-+ (void)enableFeedbackForm:(NSString*) method;
++ (void)enableFeedbackForm:(NSString *) method;
 
 /**
  * Disables the ability to present users with feedback when
@@ -301,6 +301,32 @@
  * Must be called before begin.
  */
 + (void)setMaxSessionLength:(float)seconds;
+
+/**
+ * Determines whether the "email field" in the Feedback form will be visible or not.
+ * default is true
+ *
+ * @param visible BOOL
+ */
++ (void)setFeedbackEmailVisible:(BOOL)visible;
+
+/**
+ * Query the distribution status of this build. Distribution is not required
+ * for working with the TestFairy SDK, meaning, you can use the SDK with the App Store.
+ *
+ * The distribution status can be either "enabled" or "disabled", and optionally, can have
+ * an auto-update. This method is useful if you're using TestFairy in your development
+ * stage and want to know if you expired the distribution of this version in your dashboard.
+ *
+ * Possible response keys:
+ *
+ * response[@"status"] = @"enabled" or @"disabled"
+ * response[@"autoUpdateDownloadUrl"] = @"<url to download url>"
+ *
+ * @param appToken App token as used with begin()
+ * @param callback to receive asynchornous response. Response dictionary can be nil
+ */
++ (void)getDistributionStatus:(NSString *)appToken callback:(void(^)(NSDictionary<NSString *, NSString *> *, NSError*))callaback;
 
 @end
 
