@@ -2,7 +2,6 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
 
     defaultConfig {
         minSdkVersion 16
@@ -19,6 +18,6 @@ android {
 }
 
 dependencies {
-    compile 'com.facebook.react:react-native:0.20.1'
-    compile 'testfairy:testfairy-android-sdk:1.8.3'
+    api 'com.facebook.react:react-native:0.20.1'
+    api 'testfairy:testfairy-android-sdk:1.8.3'
 }
