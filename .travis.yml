@@ -19,6 +19,7 @@ before_install:
 - echo yes | android update sdk --filter extra-android-m2repository --no-ui --force > /dev/null
 
 install:
+  - nvm install 8.3 --reinstall-packages-from=node
   - npm install -g react-native-cli
 
 script:
