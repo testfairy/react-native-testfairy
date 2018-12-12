@@ -29,11 +29,12 @@ script:
   - npm install ../
   - react-native link
   - git apply ../misc/testfairy.patch
-  - react-native run-ios
-  - react-native run-android
+  - cd android
+  - ./gradlew assembleDebug
+  - cd ../ios
 
 before_deploy:
-  - cd ..
+  - cd ../..
   - rm -rf AwesomeProject
   - sed -i'' "s/\"version\":.*/\"version\":\"${TRAVIS_TAG}\",/g" package.json
 
