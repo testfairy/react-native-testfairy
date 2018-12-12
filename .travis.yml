@@ -22,6 +22,7 @@ before_install:
 install:
   - nvm install 8.3 --reinstall-packages-from=node
   - npm install -g react-native-cli
+  - gem install xcpretty
 
 script:
   - react-native init AwesomeProject
@@ -32,7 +33,7 @@ script:
   - cd android
   - ./gradlew assembleDebug
   - cd ../ios
-  - xcrun xcodebuild -project AwesomeProject.xcodeproj -scheme AwesomeProject -configuration Debug CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+  - xcrun xcodebuild -project AwesomeProject.xcodeproj -scheme AwesomeProject -configuration Debug CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcpretty
 
 before_deploy:
   - cd ../..
