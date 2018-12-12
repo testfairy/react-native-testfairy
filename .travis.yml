@@ -1,6 +1,5 @@
-language: node_js
-node_js:
-- '4.1'
+language: objective-c
+
 before_install:
 - brew tap caskroom/versions
 - brew cask install java8
@@ -18,8 +17,10 @@ before_install:
 - echo yes | android update sdk --filter sysimg-23 --no-ui --force > /dev/null
 - echo yes | android update sdk --filter extra-android-support --no-ui --force > /dev/null
 - echo yes | android update sdk --filter extra-android-m2repository --no-ui --force > /dev/null
+
 install:
   - npm install -g react-native-cli
+
 script:
   - react-native init AwesomeProject
   - cd AwesomeProject
@@ -28,10 +29,12 @@ script:
   - git apply ../misc/testfairy.patch
   - react-native run-ios
   - react-native run-android
+
 before_deploy:
   - cd ..
   - rm -rf AwesomeProject
   - sed -i'' "s/\"version\":.*/\"version\":\"${TRAVIS_TAG}\",/g" package.json
+
 deploy:
   provider: npm
   email: support@testfairy.com
