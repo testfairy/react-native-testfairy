@@ -3,6 +3,63 @@
 
 #define TF_DEPRECATED(x)  __attribute__ ((deprecated(x)))
 
+@protocol TestFairySessionStateDelegate <NSObject>
+@optional
+/**
+ * Callback when a session has successfully started on TestFairy.
+ */
+- (void)sessionStarted;
+
+/**
+ * Callback when a session failed to started. Could be because the recording
+ * is set to off, session limit has reached, request rejected or other reasons.
+ */
+- (void)sessionFailed;
+
+/**
+ * Callback when session length has reached. For example, if your session
+ * is set to maximum of 10 minutes, you will get a callback if such a limit
+ * was reached. You can start a new session if you wish to do so.
+ *
+ * @param secondsFromStartSession
+ */
+- (void)sessionLengthReached:(float)secondsFromStartSession;
+
+/**
+ * Callback when session recording stopped. Could be because session length
+ * reached the limit, stop() was called, app moved to background for too long,
+ * or similar reason.
+ */
+- (void)sessionStopped;
+
+/**
+ * Callback when there is an update available. Either this method is called,
+ * or noAutoUpdateAvailable() is called.
+ *
+ * @param url
+ */
+- (void)autoUpdateAvailable:(NSString *)url;
+
+/**
+ * Callback when a user was presented for a request of an auto-update, and
+ * then clicked "Yes".
+ */
+- (void)autoUpdateDownloadStarted;
+
+/**
+ * Callback when a user was displayed with a dialog asking if they would like to upgrade,
+ * and they clicked "No".
+ */
+- (void)autoUpdateDismissed;
+
+/**
+ * Callback when session start was requested and there was no auto update
+ * available. In this case, the user will not be displayed with a dialog box. Note
+ * that sessionFailed() could still be called.
+ */
+- (void)noAutoUpdateAvailable;
+@end
+
 @interface TestFairy: NSObject
 
 /**
@@ -327,6 +384,8 @@
  * @param callback to receive asynchornous response. Response dictionary can be nil
  */
 + (void)getDistributionStatus:(NSString *)appToken callback:(void(^)(NSDictionary<NSString *, NSString *> *, NSError*))callaback;
+
++ (void)setSessionStateDelegate:(id<TestFairySessionStateDelegate>)delegate;
 
 @end
 
