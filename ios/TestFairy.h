@@ -385,8 +385,16 @@
  */
 + (void)getDistributionStatus:(NSString *)appToken callback:(void(^)(NSDictionary<NSString *, NSString *> *, NSError*))callaback;
 
+/**
+ * Set the delegate object to listent to TestFairy events. See @TestFairySessionStateDelegate
+ * for more information
+ */
 + (void)setSessionStateDelegate:(id<TestFairySessionStateDelegate>)delegate;
 
+/**
+ * Call this function to log your network events.
+ */
++ (void)addNetwork:(NSURLSessionTask *)task error:(NSError *)error;
 @end
 
 #if __cplusplus
