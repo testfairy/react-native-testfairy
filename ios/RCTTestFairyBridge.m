@@ -172,6 +172,13 @@ RCT_EXPORT_METHOD(setMaxSessionLength:(float)seconds) {
 	});
 }
 
+RCT_EXPORT_METHOD(logException:(NSString *)message trace:(NSString *)trace) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		NSError *error = [NSError errorWithDomain:@"com.testfairy.react-native" code:-1 userInfo:@{NSLocalizedDescriptionKey: message}];
+		[TestFairy logError:error stacktrace:[trace componentsSeparatedByString:@"\n"]];
+	});
+}
+
 RCT_EXPORT_METHOD(hideView:(nonnull NSNumber *)reactTag) {
 	dispatch_async(_bridge.uiManager.methodQueue, ^{
 		[_bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {

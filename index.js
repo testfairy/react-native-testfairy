@@ -274,6 +274,15 @@ class TestFairy {
 	static setMaxSessionLength(seconds) {
 		TestFairyBridge.setMaxSessionLength(seconds);
 	}
+
+	/**
+	 * Send an exception to TestFairy.
+	 * Note, this function is limited to 5 errors.
+	 * @param error Error
+	 */
+	static logException(error) {
+		TestFairyBridge.logException(error.message, error.stack);
+	}
 }
 
 // var _testfairyConsoleLog = console.log;

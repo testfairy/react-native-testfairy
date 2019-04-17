@@ -311,6 +311,16 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
 			});
 		}
 
+		@ReactMethod
+		public void logException(final String message, final String stack) {
+			runOnUi(new Runnable() {
+					@Override
+					public void run() {
+							TestFairy.logThrowable(new Exception(message));
+					}
+			});
+		}
+
     private Map<String, Object> convertMap(ReadableMap map) {
         Map<String, Object> input = new HashMap<String, Object>();
         ReadableMapKeySetIterator iterator = map.keySetIterator();
