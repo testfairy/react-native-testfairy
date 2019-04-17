@@ -82,6 +82,11 @@
 + (void)begin:(NSString *)appToken withOptions:(NSDictionary *)options;
 
 /**
+ * Initialize the TestFairy SDK with only crash handling. No sessions will be recorded.
+ */
++ (void)installCrashHandler:(NSString *)appToken;
+
+/**
  * Change the server endpoint for use with on-premise hosting. Please
  * contact support or sales for more information. Must be called before begin
  *
@@ -395,6 +400,16 @@
  * Call this function to log your network events.
  */
 + (void)addNetwork:(NSURLSessionTask *)task error:(NSError *)error;
+
+/**
+ * Send an NSError to TestFairy.
+ * Note, this function is limited to 5 errors.
+ * @param error NSError
+ * @param trace Stacktrace
+ */
++ (void)logError:(NSError *)error stacktrace:(NSArray *)trace;
++ (void)logError:(NSError *)error;
+
 @end
 
 #if __cplusplus
