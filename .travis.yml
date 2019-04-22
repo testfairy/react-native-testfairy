@@ -2,7 +2,7 @@ language: objective-c
 
 before_install:
 - brew tap caskroom/versions
-- brew cask install java8
+- brew cask install caskroom/versions/java8
 - export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_202.jdk/Contents/Home
 - ls -la /Library/Java/JavaVirtualMachines
 - wget http://dl.google.com/android/android-sdk_r24.4.1-macosx.zip
