@@ -1,11 +1,6 @@
 language: objective-c
 
 before_install:
-# - brew tap caskroom/versions
-# - brew cask install java8
-# - export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_202.jdk/Contents/Home
-- echo $JAVA_HOME
-- ls -la /Library/Java/JavaVirtualMachines
 - wget http://dl.google.com/android/android-sdk_r24.4.1-macosx.zip
 - unzip android-sdk_r24.4.1-macosx.zip
 - export ANDROID_HOME=$PWD/android-sdk-macosx
@@ -13,9 +8,6 @@ before_install:
 - echo yes | android update sdk --filter platform-tools --no-ui --force > /dev/null
 - echo yes | android update sdk --filter android-28 --no-ui --force > /dev/null
 - echo yes | android update sdk --filter build-tools-28.0.3 --all --no-ui --force > /dev/null
-- echo yes | android update sdk --filter sysimg-27 --no-ui --force > /dev/null
-- echo yes | android update sdk --filter extra-android-support --no-ui --force > /dev/null
-- echo yes | android update sdk --filter extra-android-m2repository --no-ui --force > /dev/null
 
 install:
   - nvm install 8.3 --reinstall-packages-from=node
