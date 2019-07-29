@@ -18,7 +18,7 @@ script:
   - react-native init AwesomeProject
   - cd AwesomeProject
   - npm install ../
-  - react-native link
+  - react-native link react-native-testfairy
   - git apply ../misc/testfairy.patch
   - cd android
   - ./gradlew assembleDebug
