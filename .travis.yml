@@ -24,7 +24,7 @@ script:
   - ./gradlew assembleDebug
   - cd ../ios
   - pod install
-  - xcrun xcodebuild -project AwesomeProject.xcodeproj -scheme AwesomeProject -configuration Debug CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcpretty
+  - xcrun xcodebuild -project AwesomeProject.xcworkspace -scheme AwesomeProject -configuration Debug CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcpretty
 
 before_deploy:
   - cd ../..
