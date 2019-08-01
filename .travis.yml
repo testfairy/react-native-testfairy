@@ -1,5 +1,4 @@
 language: objective-c
-
 before_install:
 - wget http://dl.google.com/android/android-sdk_r24.4.1-macosx.zip
 - unzip android-sdk_r24.4.1-macosx.zip
@@ -7,35 +6,33 @@ before_install:
 - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
 - echo yes | android update sdk --filter platform-tools --no-ui --force > /dev/null
 - echo yes | android update sdk --filter android-28 --no-ui --force > /dev/null
-- echo yes | android update sdk --filter build-tools-28.0.3 --all --no-ui --force > /dev/null
-
+- echo yes | android update sdk --filter build-tools-28.0.3 --all --no-ui --force
+  > /dev/null
 install:
-  - nvm install 8.3 --reinstall-packages-from=node
-  - npm install -g react-native-cli
-  - gem install xcpretty
-
+- nvm install 8.3 --reinstall-packages-from=node
+- npm install -g react-native-cli
+- gem install xcpretty
 script:
-  - react-native init AwesomeProject
-  - cd AwesomeProject
-  - npm install ../
-  - react-native link react-native-testfairy
-  - git apply ../misc/testfairy.patch
-  - cd android
-  - ./gradlew assembleDebug
-  - cd ../ios
-  - pod install
-  - xcrun xcodebuild -project AwesomeProject.xcworkspace -scheme AwesomeProject -configuration Debug CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcpretty
-
+- react-native init AwesomeProject
+- cd AwesomeProject
+- npm install ../
+- react-native link react-native-testfairy
+- git apply ../misc/testfairy.patch
+- cd android
+- "./gradlew assembleDebug"
+- cd ../ios
+- pod install
+- xcrun xcodebuild -project AwesomeProject.xcworkspace -scheme AwesomeProject -configuration
+  Debug CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcpretty
 before_deploy:
-  - cd ../..
-  - rm -rf AwesomeProject
-  - sed -i '' "s/\"version\":.*/\"version\":\"${TRAVIS_TAG}\",/g" package.json
-
+- cd ../..
+- rm -rf AwesomeProject
+- sed -i '' "s/\"version\":.*/\"version\":\"${TRAVIS_TAG}\",/g" package.json
 deploy:
   provider: npm
   email: support@testfairy.com
   api_key:
-    secure: vIrxQligyqJMwKK34fD9OjsAyeEvJjYN9bT2l8WEc+GfXNK1LQpxhznONP6vJVOAIw7oNQwoyRdjYtMKqk1wUOx0tQ3tPDgsfIcrHGBlII7tUpWQpKGahXvKmu8wInu6CtYX5QWm9FJcDS/UOsW7MBF/kp2lKS0z5HScHVYV2ZjMQm/cFNgqagui5JxOtb+YyY1NLVac1CibHUf2D8za4HjffWeS+r6xgZ9Lglq4YwVS3MZZFKeC7FwoK4MdATVaj8QUNKbEXsaqVEZ4bm+92fNpMx4AjuWZCNqobo4JrTj710HTqz9c8EO3gueTjDH0CDxCzGONSYFTjF0vaAHvvGMNDK31069YCTuY7df+1BsqiBymouiwQ3XpmNYSkjYsV68mzpwT6pLS7j/kZpzH6UFk5UonZcx2HWRFMuZdauhciy+NwOSdLHOV9S12kHWjtsKjUuIsYDhJqQ6EeAf59SLMW4QNmVaoLr7Np75AruZG5LP7oqfTSHWQHgj+WkObJJprWn3uNvCO8ygtA82BCnsYKM4t072DO+LmNu4h8jQtB+8vhgfjjkdGlM6n1r7q59uLLXorq+Oy/PLbnYy+zvdBDUWOtYSs0Ad2xvi6Y3e4kJZLYMvds2XT6xFfh1KBclBXZiXrN5Duna6OBETU5bwNxsGkxyuz/vdcU1ANb54=
+    secure: GqHP9iVVyhC1m0aYBW73+BN4JnHXCMuYfN+fY7AaHr0BCCMrLv9v/7SnByYmKYmco0NkjaytTt/w42PLNEtzznSBHwzOez1JGUUEklWjKGD0d2UNauj6ILzayp10Kn3jzN/iEvS7doF8n9KykkpGCWd2U091qZV8dbGRc+Y8dd42PzCNKtf/B9kZv8mreOfXScz22JFZDizDRRuvjlCYJ8yAVWhmfkZtA4dZyxBPYIvLIW4Hj5Mo99+EVpmotO41OM1K6I0rgeoYK+sMIOP6xTpYLfRXyCUC/5PnolmaSmle9a6L0MgCCntvbHNETwU602h3Ja34c31Z4Eb6FI/iO7FuzpPuZnwAFFfnqjJBkDMx1+TFkX4TrWali9SsXSZc5HGd+1nxciKO5+zn9WFoeSlkM/0sFAVB1N1SqP58fXAmMEwrxTwJDY4LLmcj6lXFYyoeX376TiEvMujaPP74rL1gIKe9Z/VJms623n1aGfEu2ZaVyS3WNA6q8fQRiVAd/HFdXhwCcJYEh6LVwux2mcTZ43bjBmRWwCgPUQNdzEtYdy1q35VetSa27+MXSl/sqRV6elrz/O/+wLAswLw55+aCfTkPm+3IAhQS+zjmMWJ/RDLlEC7lsW9OAYtODvrBdV3Pl/AydtlOqXa4OJ3kGH38/kbZs6heI/75Q2WArqc=
   on:
     tags: true
     repo: testfairy/react-native-testfairy
