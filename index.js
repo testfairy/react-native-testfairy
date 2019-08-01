@@ -264,6 +264,14 @@ class TestFairy {
 	}
 
 	/**
+	 * Disables auto update prompts for this session. Must be called
+	 * Must be called before begin.
+	 */
+	static disableAutoUpdate() {
+		TestFairyBridge.disableAutoUpdate();
+	}
+
+	/**
 	 * Sets the maximum recording time. Minimum value is 60 seconds,
 	 * else the value defined in the build settings will be used. The
 	 * maximum value is the lowest value between this value and the

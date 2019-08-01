@@ -179,6 +179,12 @@ RCT_EXPORT_METHOD(logException:(NSString *)message trace:(NSString *)trace) {
 	});
 }
 
+RCT_EXPORT_METHOD(disableFeedbackForm) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[TestFairy disableAutoUpdate];
+	});
+}
+
 RCT_EXPORT_METHOD(hideView:(nonnull NSNumber *)reactTag) {
 	dispatch_async(_bridge.uiManager.methodQueue, ^{
 		[_bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {

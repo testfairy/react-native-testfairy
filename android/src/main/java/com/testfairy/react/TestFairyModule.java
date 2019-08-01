@@ -302,6 +302,16 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
 		}
 
 		@ReactMethod
+    public void disableAutoUpdate() {
+			runOnUi(new Runnable() {
+					@Override
+					public void run() {
+							TestFairy.disableAutoUpdate();
+					}
+			});
+		}
+
+		@ReactMethod
     public void setMaxSessionLength(final float seconds) {
 			runOnUi(new Runnable() {
 					@Override
