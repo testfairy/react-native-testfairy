@@ -179,7 +179,7 @@ RCT_EXPORT_METHOD(logException:(NSString *)message trace:(NSString *)trace) {
 	});
 }
 
-RCT_EXPORT_METHOD(disableFeedbackForm) {
+RCT_EXPORT_METHOD(disableAutoUpdate) {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[TestFairy disableAutoUpdate];
 	});
