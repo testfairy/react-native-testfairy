@@ -106,7 +106,7 @@
 + (void)hideView:(UIView *)view;
 
 /**
- * Hides a specific html element from appearing in your UIWebView
+ * Hides a specific html element from appearing in your WKWebView
  *
  * @param selector The specific selector you wish to hide from screenshots. Multiple selectors can be comma separated
  */
