@@ -180,6 +180,22 @@ class TestFairy {
 		TestFairyBridge.pushFeedbackController();
 	}
 
+	/**
+	 * Displays the feedback form. Allow users to provide
+	 * feedback without prior call to begin. All feedback
+	 * will appear in your build report page, and in
+	 * "Feedbacks" tab.
+	 *
+	 * This method is different from showFeedbackForm by
+	 * that it does not require a call to begin().
+	 *
+	 * @param appToken Your key as given to you in your TestFairy account
+	 * @param takeScreenshot whether screenshot should be automatically added
+	 */
+	static showFeedbackForm(appToken, takeScreenshot) {
+		TestFairyBridge.showFeedbackForm(appToken, takeScreenshot);
+	}
+
 	static hideWebViewElements(selector) {
 		TestFairyBridge.hideWebViewElements(selector);
 	}

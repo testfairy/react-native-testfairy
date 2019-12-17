@@ -100,6 +100,12 @@ RCT_EXPORT_METHOD(pushFeedbackController) {
 	});
 }
 
+RCT_EXPORT_METHOD(showFeedbackForm:(NSString *)appToken takeScreenshot:(BOOL)takeScreenshot) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[TestFairy showFeedbackForm:appToken takeScreenshot:takeScreenshot];
+	});
+}
+
 RCT_EXPORT_METHOD(setUserId:(NSString *)userId) {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[TestFairy setUserId:userId];

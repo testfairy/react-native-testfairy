@@ -92,6 +92,16 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void showFeedbackForm(final String appToken, final boolean takeScreenshot) {
+        runOnUi(new Runnable() {
+            @Override
+            public void run() {
+                TestFairy.showFeedbackForm(getReactApplicationContext(), appToken, takeScreenshot);
+            }
+        });
+    }
+
+    @ReactMethod
     public void resume() {
         runOnUi(new Runnable() {
             @Override
