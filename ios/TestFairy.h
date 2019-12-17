@@ -138,6 +138,20 @@
 + (void)showFeedbackForm;
 
 /**
+ * Displays the feedback form. Allow users to provide
+ * feedback without prior call to begin. All feedback
+ * will appear in your build report page, and in
+ * "Feedbacks" tab.
+ *
+ * This method is different from showFeedbackForm by
+ * that it does not require a call to begin().
+ *
+ * @param appToken Your key as given to you in your TestFairy account
+ * @param takeScreenshot whether screenshot should be automatically added
+ */
++ (void)showFeedbackForm:(NSString *)appToken takeScreenshot:(BOOL)takeScreenshot;
+
+/**
  * Send a feedback on behalf of the user. Call when using a in-house
  * feedback view controller with a custom design and feel. Feedback will
  * be associated with the current session.
