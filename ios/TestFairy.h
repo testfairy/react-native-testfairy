@@ -151,21 +151,35 @@
  */
 + (void)showFeedbackForm:(NSString *)appToken takeScreenshot:(BOOL)takeScreenshot;
 
+
 /**
- * Send a feedback on behalf of the user. Call when using a in-house
- * feedback view controller with a custom design and feel. Feedback will
- * be associated with the current session.
+ * Start collecting feedback by having your users either capture a
+ * screenshot or recording before filling the Feedback form. All
+ * feedbacks will appear in your build report page, and on the
+ * "Feedbacks" tab.
  *
- * @param feedbackString Feedback text
+ * Does not require a call to begin().
+ *
+ * @param appToken Your key as given to you in your TestFairy account
+ * @param intent Either "video" or "screenshot"
  */
-+ (void)sendUserFeedback:(NSString *)feedbackString;
++ (void)startFeedback:(NSString *)appToken withIntent:(NSString *)intent;
 
 /**
  * Send a feedback on behalf of the user. Call when using a in-house
  * feedback view controller with a custom design and feel. Feedback will
  * be associated with the current session.
  *
- * @param feedbackString Feedback text
+ * @param feedback Feedback text
+ */
++ (void)sendUserFeedback:(NSString *)feedback;
+
+/**
+ * Send a feedback on behalf of the user. Call when using a in-house
+ * feedback view controller with a custom design and feel. Feedback will
+ * be associated with the current session.
+ *
+ * @param text Feedback text
  */
 + (void)sendUserFeedback:(NSString *)appToken text:(NSString *)text screenshot:(UIImage *)image;
 

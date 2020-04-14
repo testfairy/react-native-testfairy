@@ -48,7 +48,7 @@ fi
 
 echo "Stripping frameworks"
 
-for file in $(find . -type f -perm +111); do
+for file in $(find . -type f); do
   # Skip non-dynamic libraries
   if ! [[ "$(file "$file")" == *"dynamically linked shared library"* ]]; then
     continue
