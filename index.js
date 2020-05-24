@@ -102,7 +102,11 @@ class TestFairy {
 	 * @param view The specific view you wish to hide from screenshots
 	 */
 	static hideView(viewTag) {
-		TestFairyBridge.hideView(findNodeHandle(viewTag));
+		if (typeof viewTag === 'number') {
+			TestFairyBridge.hideView(findNodeHandle(viewTag));
+		} else {
+			TestFairyBridge.hideViewWithNativeId(viewTag);
+		}
 	}
 
 	/**

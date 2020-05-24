@@ -204,4 +204,38 @@ RCT_EXPORT_METHOD(hideView:(nonnull NSNumber *)reactTag) {
 	});
 }
 
+RCT_EXPORT_METHOD(hideViewWithNativeId:(nonnull NSString *)nativeId) {
+	SEL selector = @selector(viewForNativeID:withRootTag:);
+	if (![_bridge.uiManager respondsToSelector:selector]) {
+		return;
+	}
+
+	dispatch_async(_bridge.uiManager.methodQueue, ^{
+		[self->_bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+			UIViewController *controller = RCTPresentedViewController();
+			if (controller == nil) {
+				return;
+			}
+			UIView* rootView = controller.view;
+			NSNumber *rootTag = rootView.reactTag;
+			if (rootTag == nil) {
+				return;
+			}
+
+			// Reflection used because this selector was first introduced in RN 0.60.0.
+			// But we support versions older than that (at least going back to 0.20+)
+			// __block UIView *view = [uiManager viewForNativeID:nativeId withRootTag:rootTag];
+			IMP imp = [uiManager methodForSelector:selector];
+			UIView*(*func)(id, SEL, NSString*, NSNumber*) = (void *)imp;
+			__block UIView *view = func(uiManager, selector, nativeId, rootTag);
+
+			if (view != nil) {
+				dispatch_async(dispatch_get_main_queue(), ^{
+					[TestFairy hideView:view];
+				});
+			}
+		}];
+	});
+}
+
 @end
