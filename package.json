@@ -2,7 +2,6 @@
   "name": "react-native-testfairy",
   "version": "2.26.1",
   "description": "TestFairy for React Native",
-  "author": "Gil Megidish",
   "main": "./index.js",
   "scripts": {
     "test": "echo \"Warn: no test specified. Skipping.\" && exit 0"
@@ -25,4 +24,3 @@
   },
   "homepage": "https://github.com/testfairy/react-native-testfairy#readme"
 }
-

@@ -29,9 +29,15 @@ script:
 - xcrun xcodebuild -project AwesomeProject.xcworkspace -scheme AwesomeProject -configuration
   Debug CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcpretty
 before_deploy:
+- ANDROID_SDK_VERSION=1.11.0
+- IOS_VERSION=1.24.3
 - cd ../..
 - rm -rf AwesomeProject
 - sed -i '' "s/\"version\":.*/\"version\":\"${TRAVIS_TAG}\",/g" package.json
+- sed -i '' "s/testfairy-android-sdk:.*/testfairy-android-sdk:${ANDROID_SDK_VERSION}@aar'/" android/build.gradle
+- curl -s -L https://s3.amazonaws.com/testfairy/sdk/TestFairySDK-${IOS_VERSION}.zip -o TestFairySDK.zip
+- unzip -d ios -o TestFairySDK.zip
+- rm TestFairySDK.zip
 deploy:
   provider: npm
   email: support@testfairy.com
