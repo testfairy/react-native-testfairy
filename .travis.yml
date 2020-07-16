@@ -10,8 +10,7 @@ before_install:
 - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
 - echo yes | android update sdk --filter platform-tools --no-ui --force > /dev/null
 - echo yes | android update sdk --filter android-28 --no-ui --force > /dev/null
-- echo yes | android update sdk --filter build-tools-28.0.3 --all --no-ui --force
-  > /dev/null
+- echo yes | android update sdk --filter build-tools-28.0.3 --all --no-ui --force > /dev/null
 install:
 - nvm install v12.18.0 --reinstall-packages-from=node
 - npm install -g react-native-cli
@@ -20,14 +19,12 @@ script:
 - react-native init AwesomeProject
 - cd AwesomeProject
 - npm install ../
-- react-native link react-native-testfairy
 - git apply ../misc/testfairy.patch
 - cd android
 - "./gradlew assembleDebug"
 - cd ../ios
 - pod install
-- xcrun xcodebuild -project AwesomeProject.xcworkspace -scheme AwesomeProject -configuration
-  Debug CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcpretty
+- xcrun xcodebuild -workspace AwesomeProject.xcworkspace -scheme AwesomeProject -configuration Debug CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
 before_deploy:
 - ANDROID_SDK_VERSION=1.11.5
 - IOS_VERSION=1.25.0
