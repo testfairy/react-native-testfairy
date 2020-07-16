@@ -457,6 +457,11 @@
 + (void)setPublicKey:(NSString *)publicKey;
 
 /**
+ * Define whether logs or screenshots are encrypted. Should be called before setPublicKey
+ */
++ (void)setEncryptionPolicy:(BOOL)encryptScreenshots encryptLogs:(BOOL)encryptLogs;
+
+/**
  * Set the delegate object to listent to TestFairy events. See @TestFairySessionStateDelegate
  * for more information
  */
