@@ -240,7 +240,7 @@ RCT_EXPORT_METHOD(hideViewWithNativeId:(nonnull NSString *)nativeId) {
 
 RCT_EXPORT_METHOD(setFeedbackOptions:(NSDictionary *)options) {
 	dispatch_async(dispatch_get_main_queue(), ^{
-		// [TestFairy setFeedbackOptions:options];
+		[TestFairy setFeedbackOptions:options];
 	});
 }
 
