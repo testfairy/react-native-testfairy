@@ -430,6 +430,25 @@
 + (void)setFeedbackEmailVisible:(BOOL)visible;
 
 /**
+ * Customize the feedback form
+ *
+ * Accepted dictionary values: @{
+ * 	@"defaultText": <Default feedback text>,
+ * 	@"isEmailMandatory": @NO|@YES,
+ * 	@"isEmailVisible": @NO|@YES
+ * }
+ *
+ * defaultText: By setting a default text, you will override the initial content of the text area
+ * inside the feedback form. This way, you can standardize the way you receive feedbacks
+ * by specifying guidelines to your users.
+ *
+ * isEmailMandatory: Determines whether the user has to add his email address to the feedback. Default is true
+ *
+ * isEmailVisible: Determines whether the email field is displayed in the feedback form. Default is true
+ */
++ (void)setFeedbackOptions:(NSDictionary *)options;
+
+/**
  * Query the distribution status of this build. Distribution is not required
  * for working with the TestFairy SDK, meaning, you can use the SDK with the App Store.
  *
