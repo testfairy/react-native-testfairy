@@ -311,6 +311,27 @@ class TestFairy {
 	static logException(error) {
 		TestFairyBridge.logException(error.message, error.stack);
 	}
+
+	/**
+	 * Customize the feedback form
+	 *
+	 * Accepted dictionary values: {
+	 * 	"defaultText": <Default feedback text>,
+	 * 	"isEmailMandatory": true|false,
+	 * 	"isEmailVisible": true|false
+	 * }
+	 *
+	 * defaultText: By setting a default text, you will override the initial content of the text area
+	 * inside the feedback form. This way, you can standardize the way you receive feedbacks
+	 * by specifying guidelines to your users.
+	 *
+	 * isEmailMandatory: Determines whether the user has to add his email address to the feedback. Default is true
+	 *
+	 * isEmailVisible: Determines whether the email field is displayed in the feedback form. Default is true
+	 */
+	static setFeedbackOptions(options) {
+		TestFairyBridge.setFeedbackOptions(options);
+	}
 }
 
 // var _testfairyConsoleLog = console.log;
