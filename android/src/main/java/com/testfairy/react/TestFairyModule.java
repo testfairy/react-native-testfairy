@@ -13,6 +13,7 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.UiThreadUtil;
 
+import com.testfairy.FeedbackOptions;
 import com.testfairy.TestFairy;
 
 import java.lang.reflect.Method;
@@ -390,6 +391,32 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
 			@Override
 			public void run() {
 				TestFairy.logThrowable(new Exception(message));
+			}
+		});
+	}
+
+	@ReactMethod
+	public void setFeedbackOptions(final ReadableMap options) {
+		runOnUi(new Runnable() {
+			@Override
+			public void run() {
+				FeedbackOptions.Builder feedbackOptions = new FeedbackOptions.Builder();
+				ReadableType defaultTextType = options.getType("defaultText");
+				if (defaultTextType == ReadableType.String) {
+					feedbackOptions.setDefaultText(options.getString("defaultText"));
+				}
+
+				ReadableType isEmailMandatoryType = options.getType("isEmailMandatory");
+				if (isEmailMandatoryType == ReadableType.Boolean) {
+					feedbackOptions.setEmailMandatory(options.getBoolean("isEmailMandatory"));
+				}
+
+				ReadableType isEmailVisibleType = options.getType("isEmailVisible");
+				if (isEmailVisibleType == ReadableType.Boolean) {
+					feedbackOptions.setEmailFieldVisible(options.getBoolean("isEmailVisible"));
+				}
+
+				TestFairy.setFeedbackOptions(feedbackOptions.build());
 			}
 		});
 	}
