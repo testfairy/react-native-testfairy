@@ -12,6 +12,7 @@ class TestFairy {
 	 * @param options A dictionary of options controlling the current session
 	 */
 	static begin(appKey, options = {}) {
+		options = {...options, "react-native-version": require('react-native/package.json').version};
 		TestFairyBridge.begin(appKey, options);
 	}
 
