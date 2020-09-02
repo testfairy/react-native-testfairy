@@ -83,6 +83,19 @@
 + (void)installCrashHandler:(NSString *)appToken;
 
 /**
+ * Initialize the TestFairy SDK with shake for feedback enabled. No sessions will be recorded.
+ */
++ (void)installFeedbackHandler:(NSString *)appToken;
+
+/**
+ * Initialize the TestFairy SDK with shake for feedback enabled. No sessions will be recorded.
+ * Enables the ability to present the feedback form
+ * based on the method given. Valid values include
+ * "shake", "screenshot" or "shake|screenshot".
+*/
++ (void)installFeedbackHandler:(NSString *)appToken method:(NSString *)method;
+
+/**
  * Change the server endpoint for use with on-premise hosting. Please
  * contact support or sales for more information. Must be called before begin
  *
@@ -498,6 +511,19 @@
 	   requestSize:(long)requestSize
 	  responseSize:(long)responseSize
 	  errorMessage:(NSString*)error;
++ (void)addNetwork:(NSURL *)url
+			method:(NSString *)method
+			  code:(int)code
+ startTimeInMillis:(long)startTime
+   endTimeInMillis:(long)endTime
+	   requestSize:(long)requestSize
+	  responseSize:(long)responseSize
+	  errorMessage:(NSString*)error
+	requestHeaders:(NSString*)requestHeaders
+	   requestBody:(NSData *)requestBody
+   responseHeaders:(NSString *)responseHeaders
+	  responseBody:(NSData*)responseBody;
+
 /**
  * Send an NSError to TestFairy.
  * Note, this function is limited to 5 errors.
