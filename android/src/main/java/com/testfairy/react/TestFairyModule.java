@@ -78,6 +78,16 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
+	public void installFeedbackHandler(final String appKey) {
+		runOnUi(new Runnable() {
+			@Override
+			public void run() {
+				TestFairy.installFeedbackHandler(getReactApplicationContext(), appKey);
+			}
+		});
+	}
+
+	@ReactMethod
 	public void setCorrelationId(final String correlationId) {
 		runOnUi(new Runnable() {
 			@Override

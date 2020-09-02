@@ -16,6 +16,12 @@ RCT_EXPORT_METHOD(begin:(NSString *)appKey withOptions:(NSDictionary *)options) 
 	});
 }
 
+RCT_EXPORT_METHOD(installFeedbackHandler:(NSString *)appKey {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[TestFairy installFeedbackHandler:appKey method:@"shake|screenshot"];
+	});
+}
+
 RCT_EXPORT_METHOD(setCorrelationId:(NSString *)correlationId) {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[TestFairy setCorrelationId:correlationId];

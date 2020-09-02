@@ -17,6 +17,13 @@ class TestFairy {
 	}
 
 	/**
+	 * Initialize the TestFairy SDK with shake for feedback enabled. No sessions will be recorded.
+	 */
+	static installFeedbackHandler(appKey) {
+		TestFairyBridge.installFeedbackHandler(appKey);
+	}
+
+	/**
 	 * Sets a correlation identifier for this session. This value can
 	 * be looked up via web dashboard. For example, setting correlation
 	 * to the value of the user-id after they logged in. Can be called
