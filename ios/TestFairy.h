@@ -500,9 +500,13 @@
 + (void)setSessionStateDelegate:(id<TestFairySessionStateDelegate>)delegate;
 
 /**
- * Call this function to log your network events.
+ * Log network calls to TestFairy.
  */
 + (void)addNetwork:(NSURLSessionTask *)task error:(NSError *)error;
+
+/**
+ * Log network calls to TestFairy
+ */
 + (void)addNetwork:(NSURL *)url
 			method:(NSString *)method
 			code:(int)code
@@ -511,6 +515,10 @@
 	   requestSize:(long)requestSize
 	  responseSize:(long)responseSize
 	  errorMessage:(NSString*)error;
+
+/**
+ * Log network calls to TestFairy, include request and response payloads.
+ */
 + (void)addNetwork:(NSURL *)url
 			method:(NSString *)method
 			  code:(int)code
