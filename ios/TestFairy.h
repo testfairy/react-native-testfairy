@@ -224,6 +224,16 @@
 + (void)addEvent:(NSString *)name;
 
 /**
+ * Adds a new user interaction to the timeline. Can be used by non-native UI frameworks to report
+ * user interactions such as clicks, long-clicks and double clicks.
+ *
+ * @param kind Kind of interaction to add [button pressed = 1, button long pressed = 8, button double tapped = 9]
+ * @param label Text content of the clicked view
+ * @param info (Optional) Extra meta data, accepted keys are "accessibilityLabel", "accessibilityIdentifier", "accessibilityHint" and "className"
+ */
++ (void)addUserInteraction:(int)kind label:(NSString *)label info:(NSDictionary *)info;
+
+/**
  * Sets a correlation identifier for this session. This value can
  * be looked up via web dashboard. For example, setting correlation
  * to the value of the user-id after they logged in. Can be called
@@ -279,10 +289,14 @@
 + (NSString *)sessionUrl;
 
 /**
- * Takes a screenshot.
- *
+ * Takes a screenshot and sends it to TestFairy
  */
 + (void)takeScreenshot;
+
+/**
+ * Takes a screenshot. Can return nil.
+ */
++ (void)takeScreenshot:(void(^)(UIImage *))callback;
 
 /**
  * Adds a screenshot to the current moment in session.
