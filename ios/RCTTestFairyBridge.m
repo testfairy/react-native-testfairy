@@ -16,7 +16,7 @@ RCT_EXPORT_METHOD(begin:(NSString *)appKey withOptions:(NSDictionary *)options) 
 	});
 }
 
-RCT_EXPORT_METHOD(installFeedbackHandler:(NSString *)appKey {
+RCT_EXPORT_METHOD(installFeedbackHandler:(NSString *)appKey) {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[TestFairy installFeedbackHandler:appKey method:@"shake|screenshot"];
 	});
