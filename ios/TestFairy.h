@@ -460,7 +460,7 @@
  * Customize the feedback form
  *
  * Accepted dictionary values: @{
- * 	@"defaultText": <Default feedback text>,
+ * 	@"defaultText": @"Default feedback text",
  * 	@"isEmailMandatory": @NO|@YES,
  * 	@"isEmailVisible": @NO|@YES
  * }
