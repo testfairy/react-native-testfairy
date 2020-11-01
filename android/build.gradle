@@ -19,5 +19,5 @@ android {
 
 dependencies {
     api 'com.facebook.react:react-native:+'
-    api 'testfairy:testfairy-android-sdk:1.11.19@aar'
+    api 'testfairy:testfairy-android-sdk:1.11.25@aar'
 }

@@ -406,7 +406,13 @@
  * Values for fps must be between 0.1 and 2.0. Value will be rounded to
  * the nearest frame.
  */
-+ (void)enableVideo:(NSString *)policy quality:(NSString *)quality framesPerSecond:(float)fps;
++ (void)enableVideo:(NSString *)policy quality:(NSString *)quality framesPerSecond:(float)fps TF_DEPRECATED("Please refer to enableVideo:");
+
+/**
+ * Enables the ability to capture video recording regardless of build settings.
+ * Valid values for policy include "always" and "wifi"
+ */
++ (void)enableVideo:(NSString *)policy;
 
 /**
  * Disables the ability to capture video recording. Must be
