@@ -56,6 +56,167 @@
 - (void)noAutoUpdateAvailable;
 @end
 
+@interface TestFairyFeedbackContent: NSObject
+- (instancetype)initWith:(NSString *)text email:(NSString *)email timestamp:(long)timestamp;
+- (instancetype)initWith:(NSString *)text email:(NSString *)email timestamp:(long)timestamp bitmap:(UIImage *)bitmap;
+- (instancetype)initWith:(NSString *)text email:(NSString *)email timestamp:(long)timestamp bitmap:(UIImage *)bitmap attributes:(NSDictionary *)attributes;
+
+@property(nonatomic, strong, readonly) NSString* text;
+@property(nonatomic, strong, readonly) NSString* email;
+@property(nonatomic, strong, readonly) UIImage* bitmap;
+@property(nonatomic, strong, readonly) NSDictionary* attributes;
+@property(nonatomic, readonly) long timestamp;
+@end
+
+/**
+ * Common interface for all custom feedback form fields
+ */
+@protocol TestFairyFeedbackFormField <NSObject>
+/**
+ * Implement this to return a custom view for the form element
+ */
+- (UIView *)onCreateView;
+
+/**
+ * Return the key name for the attribute represented by this form field
+ */
+- (NSString *)getAttribute;
+
+/**
+ * Return the value for the attribute respressented by this form field
+ */
+- (NSString *)getValue;
+@end
+
+/**
+ * A simple form element for editable string inputs
+ */
+@interface TestFairyStringFeedbackFormField : NSObject<TestFairyFeedbackFormField>
+- (instancetype)initWithAttribute:(NSString *)attribute
+							label:(NSString *)label
+					  placeholder:(NSString *)placeholder
+					 defaultValue:(NSString *)value;
+@end
+
+/**
+ * A simple form element for editable text area.
+ */
+@interface TestFairyTextAreaFeedbackFormField : NSObject<TestFairyFeedbackFormField>
+- (instancetype)initWithAttribute:(NSString *)attribute
+					  placeholder:(NSString *)placeholder
+					defaultValue:(NSString *)value;
+@end
+
+/**
+ * A dropdown element to represent single choice options, like an HTML select node.
+ */
+@interface TestFairySelectFeedbackFormField : NSObject<TestFairyFeedbackFormField>
+- (instancetype)initWithAttribute:(NSString *)attribute
+							label:(NSString *)label
+						   values:(NSDictionary *)values
+					 defaultValue:(NSString *)value;
+@end
+
+@class TestFairyFeedbackOptionsBuilder;
+
+/**
+ * Block for reviewing and modify feedback content before it is sent to the server
+ */
+typedef TestFairyFeedbackContent * (^TestFairyFeedbackInterceptor)(TestFairyFeedbackContent *);
+
+@protocol TestFairyFeedbackVerifier <NSObject>
+/**
+ * A callback from the feedback form to verify the contents that the user
+ * has inputed. Use this to verify the email address, specific address of the
+ * content, or any other information available in FeedbackContent.
+ *
+ * @param content TestFairyFeedbackContent
+ * @return YES if verification passed
+ */
+- (BOOL)verifyFeedback:(TestFairyFeedbackContent *)content;
+
+/**
+ * A callback to get the error message after a failure from verifyFeedback
+ * method. This will only be called after verifyFeedback returned NO.
+ *
+ * @return Error message to be displayed on screen
+ */
+- (NSString *)getVerificationFailedMessage;
+@end
+
+@interface TestFairyFeedbackOptions: NSObject
+
+/**
+ * Convenience method for creating TestFairyFeedbackOptions.
+ *
+ * TestFairyFeedbackOptions *options = [TestFairyFeedbackOptions createWithBlock:^(TestFairyFeedbackOptionsBuilder * builder) {
+ *    builder.defaultText = @"Some default text";
+ *    builder.isEmailMandatory = NO;
+ * }];
+ *
+ * Note: Developers do not need to call "build" on the TestFairyFeedbackOptionsBuilder. This will be called internally
+ */
++ (instancetype)createWithBlock:(void (^)(TestFairyFeedbackOptionsBuilder *))block;
+
+/**
+ * By setting a default text, you will override the initial content of the text area
+ * inside the feedback form. This way, you can standardize the way you receive feedbacks
+ * by specifying guidelines to your users.
+*/
+@property(readonly, nonatomic, strong) NSString* defaultText;
+
+/**
+ * Determines whether the user has to add his email address to the feedback. Default is true
+ */
+@property(readonly, nonatomic) BOOL isEmailMandatory;
+
+/**
+ * Determines whether the email field is displayed in the feedback form. Default is true
+ *  Note: If set to false, isEmailMandatory will also be set to false.
+ */
+@property(readonly, nonatomic) BOOL isEmailVisible;
+
+/**
+ * An optional callback before a feedback is sent. This allows the developer to review
+ * and modify the contents of the feedback (email, feedback body, attributes, and so on.)
+ */
+@property(readonly, nonatomic, copy) TestFairyFeedbackInterceptor interceptor;
+
+/**
+ * By setting this list, feedback forms can be customized with extra input fields.
+ * Calling with a nil or empty list will enable the default fields, namely email and feedback message.
+ */
+@property(readonly, nonatomic) NSArray *feedbackFormFields;
+
+/**
+ * Provide a custom verification class for feedbacks. This allows you
+ * to control the checks that are done against the feedback's content
+ * and email address. If not provided, TestFairy will check for valid
+ * email (if mandatory) and feedback text. By providing your own class,
+ * you can, for example, add checks for email addresses ending with
+ * your own company domain.
+ */
+@property(readonly, nonatomic) id<TestFairyFeedbackVerifier> verifier;
+
+@end
+
+@interface TestFairyFeedbackOptionsBuilder: NSObject
+
+/**
+ * Create TestFairyFeedbackOptions.
+ *
+ * Alternatively, See TestFairyFeedbackOptions#createWithBlock
+ */
+- (TestFairyFeedbackOptions *)build;
+
+@property(nonatomic, strong) NSString* defaultText;
+@property(nonatomic) BOOL isEmailMandatory;
+@property(nonatomic) BOOL isEmailVisible;
+@property(nonatomic, copy) TestFairyFeedbackInterceptor interceptor;
+@property(nonatomic, strong) NSArray *feedbackFormFields;
+@property(nonatomic, strong) id<TestFairyFeedbackVerifier> verifier;
+@end
+
 @interface TestFairy: NSObject
 
 /**
@@ -460,7 +621,7 @@
  *
  * @param visible BOOL
  */
-+ (void)setFeedbackEmailVisible:(BOOL)visible;
++ (void)setFeedbackEmailVisible:(BOOL)visible TF_DEPRECATED("Please refer setTestFairyFeedbackOptions");
 
 /**
  * Customize the feedback form
@@ -479,7 +640,12 @@
  *
  * isEmailVisible: Determines whether the email field is displayed in the feedback form. Default is true
  */
-+ (void)setFeedbackOptions:(NSDictionary *)options;
++ (void)setFeedbackOptions:(NSDictionary *)options TF_DEPRECATED("Please refer to setTestFairyFeedbackOptions");
+
+/**
+ * You can customize the feedback form by creating FeedbackOptions, See TestFairyFeedbackOptions
+ */
++ (void)setTestFairyFeedbackOptions:(TestFairyFeedbackOptions *)options;
 
 /**
  * Query the distribution status of this build. Distribution is not required
