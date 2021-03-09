@@ -7,7 +7,7 @@ For class reference, installation instructions and more information, please visi
 License
 =======
 
-    Copyright 2016-2020 TestFairy.
+    Copyright 2016-2021 TestFairy.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
