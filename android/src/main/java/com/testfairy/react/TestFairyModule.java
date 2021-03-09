@@ -411,25 +411,32 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
 			@Override
 			public void run() {
 				FeedbackOptions.Builder feedbackOptions = new FeedbackOptions.Builder();
-				ReadableType defaultTextType = options.getType("defaultText");
-				if (defaultTextType == ReadableType.String) {
-					feedbackOptions.setDefaultText(options.getString("defaultText"));
+								
+				if (options.hasKey("defaultText")) {
+					ReadableType defaultTextType = options.getType("defaultText");
+					if (defaultTextType == ReadableType.String) {
+						feedbackOptions.setDefaultText(options.getString("defaultText"));
+					}
 				}
 
-				ReadableType isEmailMandatoryType = options.getType("isEmailMandatory");
-				if (isEmailMandatoryType == ReadableType.Boolean) {
-					feedbackOptions.setEmailMandatory(options.getBoolean("isEmailMandatory"));
+
+				if (options.hasKey("isEmailMandatory")) {
+					ReadableType isEmailMandatoryType = options.getType("isEmailMandatory");
+					if (isEmailMandatoryType == ReadableType.Boolean) {
+						feedbackOptions.setEmailMandatory(options.getBoolean("isEmailMandatory"));
+					}
 				}
 
-				ReadableType isEmailVisibleType = options.getType("isEmailVisible");
-				if (isEmailVisibleType == ReadableType.Boolean) {
-					feedbackOptions.setEmailFieldVisible(options.getBoolean("isEmailVisible"));
+				if (options.hasKey("isEmailVisible")) {
+					ReadableType isEmailVisibleType = options.getType("isEmailVisible");
+					if (isEmailVisibleType == ReadableType.Boolean) {
+						feedbackOptions.setEmailFieldVisible(options.getBoolean("isEmailVisible"));
+					}
 				}
-
-				TestFairy.setFeedbackOptions(feedbackOptions.build());
 			}
 		});
 	}
+	
 
 	private Map<String, Object> convertMap(ReadableMap map) {
 		Map<String, Object> input = new HashMap<String, Object>();
