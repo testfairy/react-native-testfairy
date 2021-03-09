@@ -411,32 +411,27 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
 			@Override
 			public void run() {
 				FeedbackOptions.Builder feedbackOptions = new FeedbackOptions.Builder();
-				if(options.hasKey("defaultText")) {
+								
+				if (options.hasKey("defaultText")) {
 					ReadableType defaultTextType = options.getType("defaultText");
 					if (defaultTextType == ReadableType.String) {
 						feedbackOptions.setDefaultText(options.getString("defaultText"));
 					}
-				}else{
-					feedbackOptions.setDefaultText("");
 				}
 
 
-				if(options.hasKey("isEmailMandatory")) {
+				if (options.hasKey("isEmailMandatory")) {
 					ReadableType isEmailMandatoryType = options.getType("isEmailMandatory");
 					if (isEmailMandatoryType == ReadableType.Boolean) {
 						feedbackOptions.setEmailMandatory(options.getBoolean("isEmailMandatory"));
 					}
-				}else{
-					feedbackOptions.setEmailMandatory(false);
 				}
 
-				if(options.hasKey("isEmailVisible")) {
+				if (options.hasKey("isEmailVisible")) {
 					ReadableType isEmailVisibleType = options.getType("isEmailVisible");
 					if (isEmailVisibleType == ReadableType.Boolean) {
 						feedbackOptions.setEmailFieldVisible(options.getBoolean("isEmailVisible"));
 					}
-				}else{
-					feedbackOptions.setEmailFieldVisible(false);
 				}
 			}
 		});
