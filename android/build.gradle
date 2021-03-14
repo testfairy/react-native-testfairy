@@ -19,5 +19,21 @@ android {
 
 dependencies {
     api 'com.facebook.react:react-native:+'
-    api 'testfairy:testfairy-android-sdk:1.11.44@aar'
+    api 'com.testfairy:testfairy-android-sdk:1.12.0@aar'
 }
+
+class TestFairyRepositoryPlugin implements Plugin<Gradle> {
+    def configRepositories = { ->
+        maven { url "https://maven.testfairy.com" }
+    }
+
+    void apply(Object gradle) {
+        // We do this since we don't know how deep we are located in the module hierarchy
+        gradle.rootProject.allprojects { project ->
+            project.repositories(configRepositories)
+            project.buildscript.repositories(configRepositories)
+        }
+    }
+}
+
+apply plugin: TestFairyRepositoryPlugin
