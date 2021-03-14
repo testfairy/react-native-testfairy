@@ -17,11 +17,8 @@ android {
     }
 }
 
-allprojects {
-    repositories {
-        google()
-        maven { url "https://maven.testfairy.com" }
-    }
+repositories {
+    maven { url "https://maven.testfairy.com" }
 }
 
 dependencies {
