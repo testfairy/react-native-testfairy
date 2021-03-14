@@ -132,7 +132,11 @@ class TestFairy {
 	 * Remote logging, use log as you would use console.log. These logs will be sent to the server.
 	 */
 	static log(message) {
-		TestFairyBridge.log(util.inspect(message));
+		try {
+			TestFairyBridge.log(JSON.stringify(message));
+		} catch (e) {
+			TestFairyBridge.log(util.inspect(message));
+		}
 	}
 
 	/**
