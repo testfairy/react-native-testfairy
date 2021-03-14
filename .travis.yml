@@ -28,7 +28,7 @@ script:
 - pod install
 - #xcrun xcodebuild -quiet -workspace AwesomeProject.xcworkspace -scheme AwesomeProject -configuration Debug CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
 before_deploy:
-- ANDROID_SDK_VERSION=1.11.44
+- ANDROID_SDK_VERSION=1.12.0
 - IOS_VERSION=1.28.1
 - cd ../..
 - rm -rf AwesomeProject
