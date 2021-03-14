@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/testfairy/react-native-testfairy"
   },
-  "homepage": "https://github.com/testfairy/react-native-testfairy#readme"
+  "homepage": "https://github.com/testfairy/react-native-testfairy#readme",
+  "dependencies": {
+    "util": "^0.12.3"
+  }
 }

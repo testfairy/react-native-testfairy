@@ -1,5 +1,6 @@
 'use strict';
 
+var util = require("util");
 var React = require('react-native');
 const findNodeHandle = React.findNodeHandle;
 const TestFairyBridge = React.NativeModules.TestFairyBridge;
@@ -131,7 +132,7 @@ class TestFairy {
 	 * Remote logging, use log as you would use console.log. These logs will be sent to the server.
 	 */
 	static log(message) {
-		TestFairyBridge.log(JSON.stringify(message));
+		TestFairyBridge.log(util.inspect(message));
 	}
 
 	/**
