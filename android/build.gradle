@@ -17,8 +17,10 @@ android {
     }
 }
 
-repositories {
-    maven { url "https://maven.testfairy.com" }
+buildscript {
+    repositories {
+        maven { url "https://maven.testfairy.com" }
+    }
 }
 
 dependencies {
