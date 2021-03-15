@@ -24,10 +24,10 @@ script:
 - npm install ../
 - git apply ../misc/testfairy.patch
 - cd android
-# - "./gradlew assembleRelease"
+- "./gradlew assembleRelease"
 - cd ../ios
 - pod install
-- xcrun xcodebuild -quiet -workspace AwesomeProject.xcworkspace -scheme AwesomeProject -configuration Debug CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
+- xcrun xcodebuild -quiet -workspace AwesomeProject.xcworkspace -scheme AwesomeProject -configuration Debug CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO GCC_WARN_INHIBIT_ALL_WARNINGS=YES | xcpretty
 before_deploy:
 - ANDROID_SDK_VERSION=1.12.0
 - IOS_VERSION=1.28.1
