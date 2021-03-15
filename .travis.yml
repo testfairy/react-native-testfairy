@@ -19,6 +19,7 @@ install:
 - gem install xcpretty
 - gem install cocoapods -v 1.10.1
 script:
+- set -o pipefail
 - react-native init AwesomeProject
 - cd AwesomeProject
 - npm install ../
