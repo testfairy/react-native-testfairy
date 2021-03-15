@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		42959849203B477A00E34882 /* RCTTestFairyBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 42959844203B477A00E34882 /* RCTTestFairyBridge.m */; };
-		4295984A203B477A00E34882 /* libTestFairy.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 42959845203B477A00E34882 /* libTestFairy.a */; };
 		42959851203B47E800E34882 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4295984C203B47E800E34882 /* SystemConfiguration.framework */; };
 		42959852203B47E800E34882 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4295984D203B47E800E34882 /* CoreMedia.framework */; };
 		42959853203B47E800E34882 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4295984E203B47E800E34882 /* CoreMotion.framework */; };
@@ -31,10 +30,7 @@
 /* Begin PBXFileReference section */
 		42959838203B471F00E34882 /* libReactNativeTestFairy.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libReactNativeTestFairy.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		42959844203B477A00E34882 /* RCTTestFairyBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTestFairyBridge.m; sourceTree = "<group>"; };
-		42959845203B477A00E34882 /* libTestFairy.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFairy.a; sourceTree = "<group>"; };
-		42959846203B477A00E34882 /* TestFairy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFairy.h; sourceTree = "<group>"; };
 		42959847203B477A00E34882 /* RCTTestFairyBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTestFairyBridge.h; sourceTree = "<group>"; };
-		42959848203B477A00E34882 /* upload-dsym.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "upload-dsym.sh"; sourceTree = "<group>"; };
 		4295984C203B47E800E34882 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		4295984D203B47E800E34882 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		4295984E203B47E800E34882 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
@@ -52,7 +48,6 @@
 				42959853203B47E800E34882 /* CoreMotion.framework in Frameworks */,
 				42959854203B47E800E34882 /* OpenGLES.framework in Frameworks */,
 				42959855203B47E800E34882 /* AVFoundation.framework in Frameworks */,
-				4295984A203B477A00E34882 /* libTestFairy.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -62,11 +57,8 @@
 		4295982F203B471F00E34882 = {
 			isa = PBXGroup;
 			children = (
-				42959845203B477A00E34882 /* libTestFairy.a */,
 				42959847203B477A00E34882 /* RCTTestFairyBridge.h */,
 				42959844203B477A00E34882 /* RCTTestFairyBridge.m */,
-				42959846203B477A00E34882 /* TestFairy.h */,
-				42959848203B477A00E34882 /* upload-dsym.sh */,
 				42959839203B471F00E34882 /* Products */,
 				4295984B203B47E800E34882 /* Frameworks */,
 			);
@@ -264,6 +256,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../../ios/Pods/TestFairy";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -279,6 +272,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../../ios/Pods/TestFairy";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
