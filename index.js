@@ -326,7 +326,7 @@ class TestFairy {
 	}
 
 	/**
-	 * Customize the feedback form
+	 * Customize the feedback form.
 	 *
 	 * Accepted dictionary values: {
 	 * 	"defaultText": <Default feedback text>,
@@ -344,6 +344,16 @@ class TestFairy {
 	 */
 	static setFeedbackOptions(options) {
 		TestFairyBridge.setFeedbackOptions(options);
+	}
+
+	/**
+	 * Attach a file to the session timeline at current moment in time.
+	 * 
+	 * @param filename Name of the attached file. It must have a file extension.
+	 * @param content A utf-8 javascript string, can be empty.
+	 */
+	static attachFile(filename, content) {
+		TestFairyBridge.attachFile(filename, content);
 	}
 }
 
