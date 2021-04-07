@@ -547,11 +547,11 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
 		UiThreadUtil.runOnUiThread(runnable);
 	}
 
-	// For to Delete the directory inside list of files and inner Directory
+	// To delete all contents recursively, like rm -rf
 	private static boolean deleteDir(File dir) {
 		if (dir.isDirectory()) {
 			String[] children = dir.list();
-			for (int i=0; i<children.length; i++) {
+			for (int i = 0; i < children.length; i++) {
 				boolean success = deleteDir(new File(dir, children[i]));
 				if (!success) {
 					return false;
@@ -559,7 +559,6 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
 			}
 		}
 
-		// The directory is now empty so delete it
 		return dir.delete();
 	}
 }
