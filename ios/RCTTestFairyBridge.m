@@ -29,9 +29,9 @@ RCT_EXPORT_METHOD(setCorrelationId:(NSString *)correlationId) {
 }
 
 RCT_EXPORT_METHOD(identify:(NSString *)correlationId traits:(NSDictionary *)traits) {
-		dispatch_async(dispatch_get_main_queue(), ^{
-			[TestFairy identify:correlationId traits:traits];
-		});
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[TestFairy identify:correlationId traits:traits];
+	});
 }
 
 RCT_EXPORT_METHOD(takeScreenshot) {
@@ -248,6 +248,28 @@ RCT_EXPORT_METHOD(setFeedbackOptions:(NSDictionary *)options) {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[TestFairy setFeedbackOptions:options];
 	});
+}
+
+RCT_EXPORT_METHOD(attachFile:(NSString *)filename content:(NSString *)content) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSString* tfTempPath = @"tfTemp";
+        NSFileManager* fileManager = [NSFileManager defaultManager];
+        NSURL* tfTemp = nil;
+        
+        if (@available(iOS 10, *)) {
+            tfTemp = [fileManager.temporaryDirectory URLByAppendingPathComponent:tfTempPath];
+        } else {
+            tfTemp = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:tfTempPath]];
+        }
+
+        [fileManager removeItemAtURL:tfTemp error:nil];
+        [fileManager createDirectoryAtURL:tfTemp withIntermediateDirectories:YES attributes:nil error:nil];
+        
+        NSURL* url = [tfTemp URLByAppendingPathComponent:filename];
+        [[RCTConvert NSData:content] writeToURL:url atomically:YES];
+        
+        [TestFairy attachFile:url];
+    });
 }
 
 @end
