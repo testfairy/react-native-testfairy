@@ -351,8 +351,9 @@ class TestFairy {
 	 * 
 	 * @param filename Name of the attached file. It must have a file extension.
 	 * @param content A utf-8 javascript string, can be empty.
+	 * @param mimeType MIME type of the given file, i.e "text/plain"
 	 */
-	static attachFile(filename, content) {
+	static attachFile(filename, content, mimeType) {
 		TestFairyBridge.attachFile(filename, content);
 	}
 }
