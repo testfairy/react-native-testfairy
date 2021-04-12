@@ -36,7 +36,7 @@ script:
 - rm -rf AwesomeProject
 - sed -i '' "s/\"version\":.*/\"version\":\"${TRAVIS_TAG}\",/g" package.json
 - sed -i '' "s/com.testfairy:testfairy-android-sdk:.*/com.testfairy:testfairy-android-sdk:${ANDROID_SDK_VERSION}@aar'/" android/build.gradle
-- sed -i '' "s/  s.dependency "TestFairy", "~> *"/  s.dependency "TestFairy", "~> ${IOS_VERSION}"/" React-TestFairy.podspec
+- sed -i '' "s/  s.dependency \"TestFairy\".*/  s.dependency \"TestFairy\", \"~> ${IOS_VERSION}\"/" React-TestFairy.podspec
 - cat android/build.gradle
 - cat React-TestFairy.podspec
 deploy:
