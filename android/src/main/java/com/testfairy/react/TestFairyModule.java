@@ -1,5 +1,6 @@
 package com.testfairy.react;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.View;
 
@@ -16,13 +17,18 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.testfairy.FeedbackOptions;
 import com.testfairy.TestFairy;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public class TestFairyModule extends ReactContextBaseJavaModule {
 	private static class TFOnMultipleViewsFoundListenerProxy implements java.lang.reflect.InvocationHandler {
@@ -419,7 +425,6 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
 					}
 				}
 
-
 				if (options.hasKey("isEmailMandatory")) {
 					ReadableType isEmailMandatoryType = options.getType("isEmailMandatory");
 					if (isEmailMandatoryType == ReadableType.Boolean) {
@@ -436,7 +441,42 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
 			}
 		});
 	}
-	
+
+	@ReactMethod
+	public void attachFile(final String filename, final String content) {
+		if (filename == null) {
+			throw new RuntimeException("Cannot attach file without a name!");
+		}
+
+		runOnUi(new Runnable() {
+			@Override
+			public void run() {
+				Context context = getReactApplicationContext();
+				File outputDir = context.getCacheDir();
+				try {
+					File tfTemp = new File(outputDir, "tfTemp");
+					if (tfTemp.exists()) {
+						deleteDir(tfTemp);
+					}
+
+					tfTemp.mkdir();
+
+					File outputFile = new File(tfTemp, filename);
+					FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
+
+					if (content != null) {
+						fileOutputStream.write(content.getBytes(Charset.forName("UTF-8")));
+					}
+
+					fileOutputStream.close();
+
+					TestFairy.attachFile(outputFile);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+	}
 
 	private Map<String, Object> convertMap(ReadableMap map) {
 		Map<String, Object> input = new HashMap<String, Object>();
@@ -505,5 +545,20 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
 
 	private void runOnUi(Runnable runnable) {
 		UiThreadUtil.runOnUiThread(runnable);
+	}
+
+	// To delete all contents recursively, like rm -rf
+	private static boolean deleteDir(File dir) {
+		if (dir.isDirectory()) {
+			String[] children = dir.list();
+			for (int i = 0; i < children.length; i++) {
+				boolean success = deleteDir(new File(dir, children[i]));
+				if (!success) {
+					return false;
+				}
+			}
+		}
+
+		return dir.delete();
 	}
 }
