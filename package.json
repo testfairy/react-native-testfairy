@@ -1,6 +1,6 @@
 {
   "name": "react-native-testfairy",
-  "version": "2.48.0",
+  "version": "2.50.0",
   "description": "TestFairy for React Native",
   "main": "./index.js",
   "scripts": {
