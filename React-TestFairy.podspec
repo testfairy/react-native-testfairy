@@ -13,9 +13,9 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/testfairy/react-native-testfairy/react-native-testfairy.git", :tag => "#{s.version}" }
   s.source_files  = "ios/*.{h,m,a}"
   s.source_files = "ios/*.{xcodeproj}", "ios/*.{h,m}"
-	s.library       = "TestFairy"
-	s.requires_arc = true
-	s.frameworks = "UIKit", "CoreMedia", "CoreMotion", "AVFoundation", "AVFoundation", "OpenGLES", "SystemConfiguration"
+  s.library       = "TestFairy"
+  s.requires_arc = true
+  s.frameworks = "UIKit", "CoreMedia", "CoreMotion", "AVFoundation", "AVFoundation", "OpenGLES", "SystemConfiguration"
   s.dependency "React"
   s.dependency "TestFairy", "1.29.0"
 end
