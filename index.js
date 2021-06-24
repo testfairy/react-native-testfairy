@@ -5,6 +5,8 @@ var React = require('react-native');
 const findNodeHandle = React.findNodeHandle;
 const TestFairyBridge = React.NativeModules.TestFairyBridge;
 
+let originalFetch = null;
+
 class TestFairy {
 	/**
 	 * Initialize a TestFairy session with options.
@@ -355,6 +357,146 @@ class TestFairy {
 	 */
 	static attachFile(filename, content, mimeType) {
 		TestFairyBridge.attachFile(filename, content);
+	}
+	
+	/**
+	 * Add a network timeline event to the current session.
+	 * 
+	 * @param {string} url URL of the network call
+	 * @param {string} method HTTP method
+	 * @param {number} statusCode Response status code
+	 * @param {number} startTimeMillis Call start time
+	 * @param {number} endTimeMillis Response end time
+	 * @param {number} requestSize Request body content size
+	 * @param {number} responseSize Response body content size
+	 * @param {string?} errorMessage Network error message if exists (optional)
+	 * @param {string?} requestHeaders Request headers (optional)
+	 * @param {string?} requestBody Request body (optional)
+	 * @param {string?} responseHeaders Response headers (optional)
+	 * @param {string?} responseBody Response body (optional)
+	 */
+	static addNetworkEvent(url, method, statusCode, startTimeMillis, endTimeMillis, requestSize, responseSize, errorMessage, requestHeaders, requestBody, responseHeaders, responseBody) {
+		TestFairyBridge.addNetworkEvent(url, method, statusCode, startTimeMillis, endTimeMillis, requestSize, responseSize, errorMessage, requestHeaders, requestBody, responseHeaders, responseBody);
+	}
+
+	/**
+	 * Enables capturing HTTP calls and reports themn in session timeline. Capturing request and response content is disabled by default.
+	 * 
+	 * @param {object} window Global window object
+	 * @param {object} Optional configuration object. Provide `includeHeaders` and `includeBodies` keys to enable request/response headers in the log.
+	 */
+	static enableNetworkLogging(window, { includeHeaders = false, includeBodies = false }) {
+		// ***********************
+		// Anatomy of a fetch() call
+		// *********************** 
+		//
+		// fetch('https://example.com/endpoint/', {
+		// 	method: 'POST',
+		// 	headers: {
+		// 		Accept: 'application/json',
+		// 		'Content-Type': 'application/json'
+		// 	},
+		// 	body: JSON.stringify({
+		// 		firstParam: 'yourValue',
+		// 		secondParam: 'yourOtherValue'
+		// 	})
+		// }).then((response) => {});
+
+		if (!originalFetch) {
+			originalFetch = window.fetch;
+		}
+
+		window.fetch = (...args) => {
+			// Grab url
+			const url = args[0]
+
+			// Grab HTTP method
+			const method = args[1] ? (args[1].method ? args[1].method : 'GET') : 'GET';
+
+			// Record call time
+			const startTimeMillis = new Date().getTime();
+
+			// Grab request size
+			const requestSize = args[1] ? (args[1].body ? args[1].body.toString().length : 0) : 0;
+
+			// Start grabbing headers
+			let requestHeaders = "";
+			let responseHeaders = "";
+
+			// Grab request headers
+			if (includeHeaders && args[1] && args[1].headers) {
+				Object.keys(args[1].headers).forEach((key) => {
+					requestHeaders += key + ": " + args[1].headers[key] + "\n";
+				})
+				requestHeaders = requestHeaders.slice(0, -1);
+			} else {
+				requestHeaders = null;
+			}
+
+			// Grab request body
+			let requestBody = null;
+			if (includeBodies && args[1] && args[1].body) {
+				requestBody = args[1].body.toString();
+			}
+
+			// Store unpolluted promise to return it eventually
+			const networkCall = originalFetch(...args);
+			
+			// Do rest of the remaining work async
+			let statusCode = -1;
+			networkCall.then((response) => {
+				// Grab response headers
+				if (includeHeaders) {
+					response.headers.forEach((val, key) => {
+						responseHeaders += key + ": " + val + "\n";
+					});
+					responseHeaders = responseHeaders.slice(0, -1);
+				} else {
+					responseHeaders = null;
+				}
+
+				// Grab status code
+				statusCode = response.status;
+
+				// Grab response body
+				return includeBodies ? response.text() : null;
+			}).then((responseBody) => {
+				// Record response time
+				const endTimeMillis = new Date().getTime();
+
+				// Grab response size
+				const responseSize = responseBody ? responseBody.length : 0;
+
+				// Send event
+				TestFairy.addNetworkEvent(url, method, statusCode, startTimeMillis, endTimeMillis, requestSize, responseSize, null, requestHeaders, requestBody, responseHeaders, responseBody);
+			}).catch((err) => {
+				// Record response time
+				const endTimeMillis = new Date().getTime();
+
+				// Assume zero response (?)
+				const responseSize = 0;
+
+				// Grab error message
+				const errorMessage = err.toString();
+
+				// Send event
+				TestFairy.addNetworkEvent(url, method, statusCode, startTimeMillis, endTimeMillis, requestSize, responseSize, errorMessage, requestHeaders, requestBody, responseHeaders, null);
+			})
+
+			// WARN : Don't ever return the polluted promise above
+			return networkCall;
+		};
+
+		window.fetch.bind(window);
+	}
+
+	/**
+	 * Disabled capturing HTTP calls.
+	 * 
+	 * @param {object} window Global window object
+	 */
+	static disableNetworkLogging(window) {
+		window.fetch = originalFetch;
 	}
 }
 

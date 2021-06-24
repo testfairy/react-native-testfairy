@@ -272,4 +272,18 @@ RCT_EXPORT_METHOD(attachFile:(NSString *)filename content:(NSString *)content) {
     });
 }
 
+RCT_EXPORT_METHOD(addNetworkEvent:(NSString *)url method:(NSString *)method statusCode:(nonnull NSNumber *)statusCode
+                  startTimeMillis:(nonnull NSNumber *)startTimeMillis endTimeMillis:(nonnull NSNumber *)endTimeMillis
+                  requestSize:(nonnull NSNumber *)requestSize responseSize:(nonnull NSNumber *)responseSize
+                  errorMessage:(NSString *)errorMessage
+                  requestHeaders:(NSString *)requestHeaders requestBody:(NSString *)requestBody responseHeaders:(NSString *)responseHeaders responseBody:(NSString *)responseBody) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (requestHeaders != nil || requestBody != nil || responseHeaders != nil || responseBody != nil) {
+            [TestFairy addNetwork:[NSURL URLWithString:url] method:method code:[statusCode intValue] startTimeInMillis:[startTimeMillis longValue] endTimeInMillis:[endTimeMillis longValue] requestSize:[requestSize longValue] responseSize:[responseSize longValue] errorMessage:errorMessage requestHeaders:requestHeaders requestBody:(requestBody != nil ? [RCTConvert NSData:requestBody] : nil) responseHeaders:responseHeaders responseBody:(responseBody != nil ? [RCTConvert NSData:responseBody] : nil)];
+        } else {
+            [TestFairy addNetwork:[NSURL URLWithString:url] method:method code:[statusCode intValue] startTimeInMillis:[startTimeMillis longValue] endTimeInMillis:[endTimeMillis longValue] requestSize:[requestSize longValue] responseSize:[responseSize longValue] errorMessage:errorMessage];
+        }
+    });
+}
+
 @end
