@@ -13,7 +13,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.UiThreadUtil;
-
 import com.testfairy.FeedbackOptions;
 import com.testfairy.TestFairy;
 
@@ -22,13 +21,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 public class TestFairyModule extends ReactContextBaseJavaModule {
 	private static class TFOnMultipleViewsFoundListenerProxy implements java.lang.reflect.InvocationHandler {
@@ -473,6 +472,36 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
 					TestFairy.attachFile(outputFile);
 				} catch (IOException e) {
 					throw new RuntimeException(e);
+				}
+			}
+		});
+	}
+
+	@ReactMethod
+	public void addNetworkEvent(
+			final String url, final String method, final int statusCode,
+			final Double startTimeMillis, final Double endTimeMillis,
+			final Double requestSize, final Double responseSize,
+			final String errorMessage,
+			final String requestHeaders, final String requestBody, final String responseHeaders, final String responseBody) {
+		runOnUi(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					if (requestHeaders != null || requestBody != null || responseHeaders != null || responseBody != null) {
+						final Charset utf8 = Charset.forName("UTF-8");
+
+						TestFairy.addNetworkEvent(
+								new URI(url), method, statusCode, startTimeMillis.longValue(), endTimeMillis.longValue(),
+								requestSize.longValue(), responseSize.longValue(), errorMessage, requestHeaders,
+								requestBody != null ? requestBody.getBytes(utf8) : null, responseHeaders, responseBody != null ? responseBody.getBytes(utf8) : null);
+					} else {
+						TestFairy.addNetworkEvent(
+								new URI(url), method, statusCode, startTimeMillis.longValue(), endTimeMillis.longValue(),
+								requestSize.longValue(), responseSize.longValue(), errorMessage);
+					}
+				} catch (Throwable e) {
+					Log.w("TestFairyModule", "Cannot add network event", e);
 				}
 			}
 		});
