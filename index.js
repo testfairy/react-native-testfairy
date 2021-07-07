@@ -380,12 +380,12 @@ class TestFairy {
 	}
 
 	/**
-	 * Enables capturing HTTP calls and reports themn in session timeline. Capturing request and response content is disabled by default.
+	 * Enables capturing HTTP calls and reports themn in session timeline. Capturing request and response bodies is disabled by default.
 	 * 
 	 * @param {object} window Global window object
 	 * @param {object} Optional configuration object. Provide `includeHeaders` and `includeBodies` keys to enable request/response headers in the log.
 	 */
-	static enableNetworkLogging(window, { includeHeaders = false, includeBodies = false }) {
+	static enableNetworkLogging(window, options) {
 		// ***********************
 		// Anatomy of a fetch() call
 		// *********************** 
@@ -402,8 +402,23 @@ class TestFairy {
 		// 	})
 		// }).then((response) => {});
 
+		if (!window.fetch) {
+			return;
+		}
+
 		if (!originalFetch) {
 			originalFetch = window.fetch;
+		}
+
+		if (window.fetch != originalFetch) {
+			return;
+		}
+
+		if (!options) {
+			options = {
+				includeHeaders: false,
+				includeBodies: false
+			}
 		}
 
 		window.fetch = (...args) => {
@@ -424,7 +439,7 @@ class TestFairy {
 			let responseHeaders = "";
 
 			// Grab request headers
-			if (includeHeaders && args[1] && args[1].headers) {
+			if (options.includeHeaders && args[1] && args[1].headers) {
 				Object.keys(args[1].headers).forEach((key) => {
 					requestHeaders += key + ": " + args[1].headers[key] + "\n";
 				})
@@ -435,7 +450,7 @@ class TestFairy {
 
 			// Grab request body
 			let requestBody = null;
-			if (includeBodies && args[1] && args[1].body) {
+			if (options.includeBodies && args[1] && args[1].body) {
 				requestBody = args[1].body.toString();
 			}
 
@@ -446,7 +461,7 @@ class TestFairy {
 			let statusCode = -1;
 			networkCall.then((response) => {
 				// Grab response headers
-				if (includeHeaders) {
+				if (options.includeHeaders) {
 					response.headers.forEach((val, key) => {
 						responseHeaders += key + ": " + val + "\n";
 					});
@@ -459,7 +474,7 @@ class TestFairy {
 				statusCode = response.status;
 
 				// Grab response body
-				return includeBodies ? response.text() : null;
+				return options.includeBodies ? response.text() : null;
 			}).then((responseBody) => {
 				// Record response time
 				const endTimeMillis = new Date().getTime();
