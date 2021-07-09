@@ -9,7 +9,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install Dependencies
       run: |
-        curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash
+        brew install nvm
         nvm install v12.18.0 --reinstall-packages-from=node
         npm install -g react-native-cli
         gem install xcpretty
