@@ -4,7 +4,6 @@ on: push
 jobs:
   run-tests:
     runs-on: macos-latest
-    xcode-version: 12.4
     timeout-minutes: 30
     steps:
     - uses: actions/checkout@v2
