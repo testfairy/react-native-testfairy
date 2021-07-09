@@ -2,15 +2,16 @@ name: Build iOS
 on: push
 
 jobs:
-  run-tests:
+  build-ios:
     runs-on: macos-latest
     timeout-minutes: 30
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '12.18.0'
     - name: Install Dependencies
       run: |
-        brew install nvm
-        nvm install v12.18.0 --reinstall-packages-from=node
         npm install -g react-native-cli
         gem install xcpretty
         gem install cocoapods -v 1.10.1
