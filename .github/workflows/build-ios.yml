@@ -1,0 +1,26 @@
+name: Build iOS
+on: push
+
+jobs:
+  run-tests:
+    runs-on: macos-latest
+    xcode-version: 12.4
+    timeout-minutes: 30
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install Dependencies
+      run: |
+        nvm install v12.18.0 --reinstall-packages-from=node
+        npm install -g react-native-cli
+        gem install xcpretty
+        gem install cocoapods -v 1.10.1
+    - name: Build sample project
+      run: |
+      set -o pipefail
+      react-native init AwesomeProject
+      cd AwesomeProject
+      npm install ../
+      git apply ../misc/testfairy.patch
+      cd ios
+      pod install
+      xcrun xcodebuild -quiet -workspace AwesomeProject.xcworkspace -scheme AwesomeProject -configuration Debug CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO GCC_WARN_INHIBIT_ALL_WARNINGS=YES | xcpretty
