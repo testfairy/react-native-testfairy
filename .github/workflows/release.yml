@@ -1,0 +1,26 @@
+name: Release TestFairy React Native SDK
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '12.x'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Update native SDK versions
+        run: |
+          ANDROID_SDK_VERSION=1.12.12
+          IOS_VERSION=1.29.2
+          sed -i '' "s/\"version\":.*/\"version\":\"${TRAVIS_TAG}\",/g" package.json
+          sed -i '' "s/com.testfairy:testfairy-android-sdk:.*/com.testfairy:testfairy-android-sdk:${ANDROID_SDK_VERSION}@aar'/" android/build.gradle
+          sed -i '' "s/  s.dependency \"TestFairy\".*/  s.dependency \"TestFairy\", \"~> ${IOS_VERSION}\"/" React-TestFairy.podspec
+      - run: npm install
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
