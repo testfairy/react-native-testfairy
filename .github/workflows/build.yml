@@ -15,17 +15,14 @@ jobs:
         npm install -g react-native-cli
         gem install xcpretty
         gem install cocoapods -v 1.10.1
-    - name: Create sample project
-      run: react-native init AwesomeProject
-    - name: Add TestFairy to sample project
+    - name: Create and build sample project with TestFairy
       run: |
+        react-native init AwesomeProject
         cd AwesomeProject
         npm install ../
         git apply ../misc/testfairy.patch
         cd ios
         pod install
-    - name: Build sample project
-      run: |
         set -o pipefail
         xcrun xcodebuild -workspace AwesomeProject.xcworkspace -scheme AwesomeProject -configuration Debug CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO GCC_WARN_INHIBIT_ALL_WARNINGS=YES | xcpretty
   build-android:
@@ -44,16 +41,11 @@ jobs:
     - name: Install Dependencies
       run: |
         npm install -g react-native-cli
-    - name: Create sample project
-      run: react-native init AwesomeProject
-    - name: Add TestFairy to sample project
+    - name: Create and build sample project with TestFairy
       run: |
+        react-native init AwesomeProject
         cd AwesomeProject
         npm install ../
         git apply ../misc/testfairy.patch
-    - name: Build sample project
-      run: |
         cd android
-        pwd
-        ls -lsrt
         ./gradlew assembleRelease
