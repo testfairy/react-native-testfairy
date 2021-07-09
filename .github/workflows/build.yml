@@ -27,7 +27,7 @@ jobs:
     - name: Build sample project
       run: |
         set -o pipefail
-        xcrun xcodebuild -quiet -workspace AwesomeProject.xcworkspace -scheme AwesomeProject -configuration Debug CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO GCC_WARN_INHIBIT_ALL_WARNINGS=YES | xcpretty
+        xcrun xcodebuild -workspace AwesomeProject.xcworkspace -scheme AwesomeProject -configuration Debug CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO GCC_WARN_INHIBIT_ALL_WARNINGS=YES | xcpretty
   build-android:
     runs-on: ubuntu-latest
     timeout-minutes: 30
