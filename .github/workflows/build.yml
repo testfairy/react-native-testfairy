@@ -51,6 +51,9 @@ jobs:
         cd AwesomeProject
         npm install ../
         git apply ../misc/testfairy.patch
-        cd android
     - name: Build sample project
-      run: ./gradlew assembleRelease
+      run: |
+        cd android
+        pwd
+        ls -lsrt
+        ./gradlew assembleRelease
