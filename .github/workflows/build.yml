@@ -48,4 +48,4 @@ jobs:
         npm install ../
         git apply ../misc/testfairy.patch
         cd android
-        ./gradlew assembleRelease
+        ./gradlew --no-daemon assembleRelease
