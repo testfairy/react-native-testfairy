@@ -1,5 +1,8 @@
 name: Build TestFairy for React Native 
-on: push
+on: 
+  push:
+  schedule:
+  - cron:  '0 2 * * *'
 
 jobs:
   build-ios:
