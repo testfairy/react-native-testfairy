@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.platform     = :ios, '9.0'
   s.source       = { :git => "https://github.com/testfairy/react-native-testfairy/react-native-testfairy.git", :tag => "#{s.version}" }
   s.source_files  = "ios/*.{h,m,a}"
-  s.source_files = "ios/*.{xcodeproj}", "ios/*.{h,m}"
+  s.source_files = "ios/*.{h,m}"
   s.library       = "TestFairy"
   s.requires_arc = true
   s.frameworks = "UIKit", "CoreMedia", "CoreMotion", "AVFoundation", "AVFoundation", "OpenGLES", "SystemConfiguration"
