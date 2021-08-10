@@ -24,7 +24,12 @@ dependencies {
 
 class TestFairyRepositoryPlugin implements Plugin<Gradle> {
     def configRepositories = { ->
-        maven { url "https://maven.testfairy.com" }
+        maven {
+            url "https://maven.testfairy.com"
+            content {
+                includeGroup "com.testfairy"
+            }
+        }
     }
 
     void apply(Object gradle) {
