@@ -18,9 +18,9 @@ jobs:
           ANDROID_SDK_VERSION=1.12.12
           IOS_VERSION=1.29.2
           echo ${GITHUB_REF##*/} > RELEASE_TAG
-          sed -i '' "s/\"version\":.*/\"version\":\"$(cat RELEASE_TAG)"\",/g" package.json
+          sed -i '' "s/\"version\":.*/\"version\":\"$(cat RELEASE_TAG)\",/g" package.json
           sed -i '' "s/com.testfairy:testfairy-android-sdk:.*/com.testfairy:testfairy-android-sdk:${ANDROID_SDK_VERSION}@aar'/" android/build.gradle
-          sed -i '' "s/  s.dependency \"TestFairy\".*/  s.dependency \"TestFairy\", \"~> ${IOS_VERSION}\"/" React-TestFairy.podspec
+          sed -i '' "s/  s.dependency \"TestFairy\".*/  s.dependency \"TestFairy\", \"${IOS_VERSION}\"/" React-TestFairy.podspec
       - run: npm install
       - run: npm publish
         env:
