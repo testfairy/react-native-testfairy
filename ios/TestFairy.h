@@ -189,6 +189,11 @@ typedef TestFairyFeedbackContent * (^TestFairyFeedbackInterceptor)(TestFairyFeed
 @property(readonly, nonatomic) NSArray *feedbackFormFields;
 
 /**
+ * Provide a custom title for the feedback form
+ */
+@property(readonly, nonatomic) NSString *title;
+
+/**
  * Provide a custom verification class for feedbacks. This allows you
  * to control the checks that are done against the feedback's content
  * and email address. If not provided, TestFairy will check for valid
@@ -212,6 +217,7 @@ typedef TestFairyFeedbackContent * (^TestFairyFeedbackInterceptor)(TestFairyFeed
 @property(nonatomic, strong) NSString* defaultText;
 @property(nonatomic) BOOL isEmailMandatory;
 @property(nonatomic) BOOL isEmailVisible;
+@property(nonatomic, strong) NSString *title;
 @property(nonatomic, copy) TestFairyFeedbackInterceptor interceptor;
 @property(nonatomic, strong) NSArray *feedbackFormFields;
 @property(nonatomic, strong) id<TestFairyFeedbackVerifier> verifier;
@@ -256,6 +262,10 @@ typedef TestFairyFeedbackContent * (^TestFairyFeedbackInterceptor)(TestFairyFeed
 */
 + (void)installFeedbackHandler:(NSString *)appToken method:(NSString *)method;
 
+/**
+ * Disables a previously installed feedback handler. Stops listening user shakes to prompt feedback alerts.
+ */
++ (void)uninstallFeedbackHandler;
 /**
  * Change the server endpoint for use with on-premise hosting. Please
  * contact support or sales for more information. Must be called before begin

@@ -22,6 +22,12 @@ RCT_EXPORT_METHOD(installFeedbackHandler:(NSString *)appKey) {
 	});
 }
 
+RCT_EXPORT_METHOD(uninstallFeedbackHandler) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[TestFairy uninstallFeedbackHandler];
+	});
+}
+
 RCT_EXPORT_METHOD(setCorrelationId:(NSString *)correlationId) {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[TestFairy setCorrelationId:correlationId];
