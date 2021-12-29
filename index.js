@@ -27,6 +27,13 @@ class TestFairy {
 	}
 
 	/**
+	 * Uninstall previously installed feedback handlers.
+	 */
+	static uninstallFeedbackHandler() {
+		TestFairyBridge.uninstallFeedbackHandler();
+	}
+
+	/**
 	 * Sets a correlation identifier for this session. This value can
 	 * be looked up via web dashboard. For example, setting correlation
 	 * to the value of the user-id after they logged in. Can be called

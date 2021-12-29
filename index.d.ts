@@ -13,6 +13,10 @@ declare class TestFairy {
 	 */
 	static installFeedbackHandler(appKey: any): void;
 	/**
+	 * Uninstall previously installed feedback handlers.
+	 */
+	static uninstallFeedbackHandler(): void;
+	/**
 	 * Sets a correlation identifier for this session. This value can
 	 * be looked up via web dashboard. For example, setting correlation
 	 * to the value of the user-id after they logged in. Can be called
