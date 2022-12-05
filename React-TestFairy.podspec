@@ -17,5 +17,5 @@ Pod::Spec.new do |s|
   s.requires_arc = true
   s.frameworks = "UIKit", "CoreMedia", "CoreMotion", "AVFoundation", "AVFoundation", "OpenGLES", "SystemConfiguration"
   s.dependency "React"
-  s.dependency "TestFairy", "1.29.9"
+  s.dependency "TestFairy", "1.30.0"
 end
