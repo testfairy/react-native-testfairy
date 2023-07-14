@@ -15,6 +15,6 @@ Pod::Spec.new do |s|
   s.source_files = "ios/*.{xcodeproj}", "ios/*.{h,m}"
   s.requires_arc = true
   s.frameworks = "UIKit", "CoreMedia", "CoreMotion", "AVFoundation", "AVFoundation", "OpenGLES", "SystemConfiguration"
-  s.dependency "React"
+  s.dependency "React-Core"
   s.dependency "TestFairy", "1.30.2"
 end
