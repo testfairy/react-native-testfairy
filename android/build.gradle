@@ -19,7 +19,7 @@ android {
 
 dependencies {
     api 'com.facebook.react:react-native:+'
-    api 'com.testfairy:testfairy-android-sdk:1.12.29@aar'
+    api 'com.testfairy:testfairy-android-sdk:1.12.31@aar'
 }
 
 class TestFairyRepositoryPlugin implements Plugin<Gradle> {
