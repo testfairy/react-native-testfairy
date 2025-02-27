@@ -237,10 +237,6 @@ typedef TestFairyFeedbackContent * (^TestFairyFeedbackInterceptor)(TestFairyFeed
  *
  * @param appToken Your key as given to you in your TestFairy account
  * @param options A dictionary of options controlling the current session
- *        Options include
- * 			- metrics: comma separated string of default metric options such as
- * 				"cpu,memory,network-requests,shake,video,logs"
- * 			- enableCrashReporter: @YES / @NO to enable crash handling. Default is @YES
  */
 + (void)begin:(NSString *)appToken withOptions:(NSDictionary *)options;
 
@@ -569,6 +565,16 @@ typedef TestFairyFeedbackContent * (^TestFairyFeedbackInterceptor)(TestFairyFeed
  * Must be called be before begin.
  */
 + (void)disableMetric:(NSString *)metric;
+
+/**
+ * Enables recording of logs regardless of build settings. Must be called before begin.
+ */
++ (void)enableLogs;
+
+/**
+ * Disables recording of logs regardless of build settings. Must be called before begin.
+ */
++ (void)disableLogs;
 
 /**
  * Enables the ability to capture video recording regardless of build settings.
