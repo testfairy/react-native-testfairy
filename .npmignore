@@ -1,5 +1,11 @@
-.travis.yml
+# The package.json "files" whitelist is the primary publish filter; this file
+# is a defensive second layer.
 example
-AwesomeProject
 misc
-
+scripts
+type-tests
+__tests__
+.eslintrc.cjs
+jest.config.cjs
+tsconfig.types.json
+*.tgz
