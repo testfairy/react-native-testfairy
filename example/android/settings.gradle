@@ -1,5 +1,4 @@
-rootProject.name = 'TestFairy'
-
+rootProject.name = 'SauceMobileBetaExample'
+apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
 include ':app'
-include ':react-native-testfairy'
-project(':react-native-testfairy').projectDir = new File(settingsDir, '../node_modules/react-native-testfairy/android')
+includeBuild('../node_modules/@react-native/gradle-plugin')
