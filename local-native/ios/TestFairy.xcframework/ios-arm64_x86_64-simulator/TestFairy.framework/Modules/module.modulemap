@@ -1,0 +1,6 @@
+framework module TestFairy {
+  umbrella header "TestFairy.h"
+  export *
+
+  module * { export * }
+}
