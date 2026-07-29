@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.saucelabs.mobilebeta</groupId>
+  <artifactId>sauce-mobile-beta-android</artifactId>
+  <version>2.0.0</version>
+  <packaging>aar</packaging>
+  <name>Sauce Mobile Beta SDK for Android</name>
+  <description>Crashless beta testing, session, feedback, and logging SDK for Android. Designed to coexist with Backtrace Error Reporting as the sole crash owner while preserving TestFairy-compatible source APIs.</description>
+  <url>https://saucelabs.com/</url>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>Sauce Labs</name>
+      <email>support@saucelabs.com</email>
+      <organization>Sauce Labs</organization>
+      <organizationUrl>https://saucelabs.com/</organizationUrl>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:https://github.com/testfairy/testfairy-android-sdk.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/testfairy/testfairy-android-sdk.git</developerConnection>
+    <url>https://github.com/testfairy/testfairy-android-sdk</url>
+  </scm>
+  <dependencies>
+    <dependency>
+      <groupId>androidx.core</groupId>
+      <artifactId>core-ktx</artifactId>
+      <version>1.3.1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>androidx.core</groupId>
+          <artifactId>core</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-stdlib-jdk7</artifactId>
+      <version>1.3.71</version>
+    </dependency>
+  </dependencies>
+</project>

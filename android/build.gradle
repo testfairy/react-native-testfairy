@@ -1,44 +1,92 @@
-apply plugin: 'com.android.library'
+import groovy.json.JsonSlurper
+
+apply plugin: "com.android.library"
+
+def safeExtGet(String propertyName, Object fallbackValue) {
+    return rootProject.ext.has(propertyName)
+            ? rootProject.ext.get(propertyName)
+            : fallbackValue
+}
+
+def packageJson = new JsonSlurper().parse(file("../package.json"))
+
+// Single package-level source of truth for the pinned native dependency.
+def nativeAndroidVersion = packageJson.sauceMobileBetaNative.android
+
+def sauceMobileBetaAndroidVersion =
+        safeExtGet("sauceMobileBetaAndroidVersion", nativeAndroidVersion)
 
 android {
-    compileSdkVersion 31
+    namespace "com.testfairy.react"
+
+    compileSdkVersion safeExtGet("compileSdkVersion", 34)
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 31
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion safeExtGet("minSdkVersion", 21)
+        targetSdkVersion safeExtGet("targetSdkVersion", 34)
+
+        consumerProguardFiles "consumer-rules.pro"
     }
+
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
-dependencies {
-    api 'com.facebook.react:react-native:+'
-    api 'com.testfairy:testfairy-android-sdk:1.12.31@aar'
-}
+// The com.saucelabs.mobilebeta dependency below is resolved on the CONSUMING
+// application's classpaths, so the repositories must be registered on every
+// project — a module-level repositories block is not enough. This mirrors how
+// the legacy react-native-testfairy package injected maven.testfairy.com.
+// The local-native Maven repository ships with the npm package (see
+// local-native/README.md for provenance); a future release will fetch the
+// artifact from a remote repository instead, which the fallback below
+// already anticipates.
+def registerSauceMobileBetaRepositories = { repoHandler ->
+    def localSauceRepo = file("$projectDir/../local-native/android/maven")
 
-class TestFairyRepositoryPlugin implements Plugin<Gradle> {
-    def configRepositories = { ->
-        maven {
-            url "https://maven.testfairy.com"
+    if (localSauceRepo.directory) {
+        repoHandler.maven {
+            url uri(localSauceRepo)
+
             content {
-                includeGroup "com.testfairy"
+                includeGroup "com.saucelabs.mobilebeta"
             }
         }
     }
 
-    void apply(Object gradle) {
-        // We do this since we don't know how deep we are located in the module hierarchy
-        gradle.rootProject.allprojects { project ->
-            project.repositories(configRepositories)
-            project.buildscript.repositories(configRepositories)
+    repoHandler.maven {
+        url "https://maven.testfairy.com"
+
+        content {
+            includeGroup "com.saucelabs.mobilebeta"
         }
     }
 }
 
-apply plugin: TestFairyRepositoryPlugin
+rootProject.allprojects { project ->
+    registerSauceMobileBetaRepositories(project.repositories)
+}
+
+repositories {
+    registerSauceMobileBetaRepositories(delegate)
+
+    google()
+    mavenCentral()
+}
+
+dependencies {
+    // Provided by the React Native gradle plugin in consuming applications.
+    implementation "com.facebook.react:react-android"
+
+    // Crashless Sauce Mobile Beta artifact. Never depend on the legacy
+    // crash-capable TestFairy Android artifacts (SDK or NDK) — they ship the
+    // TestFairy crash handler and duplicate the com.testfairy classes.
+    implementation "com.saucelabs.mobilebeta:sauce-mobile-beta-android:${sauceMobileBetaAndroidVersion}"
+}

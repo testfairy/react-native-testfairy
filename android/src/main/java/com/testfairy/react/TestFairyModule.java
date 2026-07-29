@@ -4,80 +4,245 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.uimanager.NativeViewHierarchyManager;
+import com.facebook.react.uimanager.UIBlock;
+import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import com.testfairy.FeedbackOptions;
+import com.testfairy.SessionStateListener;
 import com.testfairy.TestFairy;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.lang.ref.WeakReference;
 import java.net.URI;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class TestFairyModule extends ReactContextBaseJavaModule {
-	private static class TFOnMultipleViewsFoundListenerProxy implements java.lang.reflect.InvocationHandler {
-		final HashSet<String> hiddenNativeIds = new HashSet<String>();
-		@Override
-		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-			Object result = null;
-			try {
-				String name = method.getName();
-				if ("onViewFound".equals(name) && args.length > 0) {
-					Object view = args[0];
-					Object nativeId = args[1];
-					if (nativeId instanceof String && view instanceof View) {
-						hiddenNativeIds.remove(nativeId);
-						TestFairy.hideView((View) view);
+public final class TestFairyModule extends ReactContextBaseJavaModule {
+
+	private static final String TAG = "SauceMobileBetaRN";
+
+	private static final String MODULE_NAME = "TestFairyBridge";
+
+	private static final String SESSION_STARTED_EVENT = "SauceMobileBetaSessionStarted";
+	private static final String SESSION_FAILED_EVENT = "SauceMobileBetaSessionFailed";
+	private static final String SESSION_LENGTH_REACHED_EVENT = "SauceMobileBetaSessionLengthReached";
+	private static final String SESSION_STOPPED_EVENT = "SauceMobileBetaSessionStopped";
+	private static final String AUTO_UPDATE_AVAILABLE_EVENT = "SauceMobileBetaAutoUpdateAvailable";
+	private static final String AUTO_UPDATE_DOWNLOAD_STARTED_EVENT = "SauceMobileBetaAutoUpdateDownloadStarted";
+	private static final String AUTO_UPDATE_DISMISSED_EVENT = "SauceMobileBetaAutoUpdateDismissed";
+	private static final String AUTO_UPDATE_DOWNLOAD_FAILED_EVENT = "SauceMobileBetaAutoUpdateDownloadFailed";
+	private static final String NO_AUTO_UPDATE_AVAILABLE_EVENT = "SauceMobileBetaNoAutoUpdateAvailable";
+
+	// The native SDK has no removeSessionStateListener, so the listener is
+	// registered exactly once per process and forwards to whichever module
+	// instance is currently attached to a React context.
+	private static final AtomicBoolean SESSION_LISTENER_REGISTERED = new AtomicBoolean(false);
+
+	private static final AtomicReference<WeakReference<TestFairyModule>> ACTIVE_MODULE =
+			new AtomicReference<WeakReference<TestFairyModule>>();
+
+	private final ExecutorService fileExecutor = Executors.newSingleThreadExecutor();
+
+	private final Set<String> hiddenNativeIds =
+			Collections.synchronizedSet(new HashSet<String>());
+
+	private final ReactFindViewUtil.OnMultipleViewsFoundListener hiddenViewsListener =
+			new ReactFindViewUtil.OnMultipleViewsFoundListener() {
+				@Override
+				public void onViewFound(View view, String nativeId) {
+					try {
+						TestFairy.hideView(view);
+					} catch (Throwable error) {
+						Log.w(TAG, "Failed to hide view with nativeID " + nativeId, error);
 					}
-				} else if ("hashCode".equals(name)) {
-					result = "TFOnMultipleViewsFoundListenerProxy".hashCode();
 				}
-			} catch (Exception ignored) {}
-			return result;
-		}
-	}
-	private final TFOnMultipleViewsFoundListenerProxy proxy = new TFOnMultipleViewsFoundListenerProxy();
-	private Object listener;
+			};
 
 	public TestFairyModule(ReactApplicationContext reactContext) {
 		super(reactContext);
 
-		try {
-			Class OnMultipleViewsFoundListener = Class.forName("com.facebook.react.uimanager.util.ReactFindViewUtil$OnMultipleViewsFoundListener");
-			listener = Proxy.newProxyInstance(
-					OnMultipleViewsFoundListener.getClassLoader(),
-					new Class[]{ OnMultipleViewsFoundListener },
-					proxy
-			);
-		} catch (Exception ignore) {}
+		ACTIVE_MODULE.set(new WeakReference<TestFairyModule>(this));
+
+		registerSessionStateListenerOnce();
 	}
 
 	@Override
 	public String getName() {
-		return "TestFairyBridge";
+		return MODULE_NAME;
+	}
+
+	@Override
+	public Map<String, Object> getConstants() {
+		Map<String, Object> constants = new HashMap<String, Object>();
+
+		constants.put("sdkName", "SauceMobileBeta");
+		constants.put("crashReportingAvailable", false);
+		constants.put("coexistenceMode", "backtrace_crash_owner");
+
+		return constants;
+	}
+
+	@Override
+	public void invalidate() {
+		WeakReference<TestFairyModule> reference = ACTIVE_MODULE.get();
+
+		if (reference != null && reference.get() == this) {
+			ACTIVE_MODULE.set(null);
+		}
+
+		ReactFindViewUtil.removeViewsListener(hiddenViewsListener);
+		fileExecutor.shutdown();
+
+		super.invalidate();
+	}
+
+	private static void registerSessionStateListenerOnce() {
+		if (!SESSION_LISTENER_REGISTERED.compareAndSet(false, true)) {
+			return;
+		}
+
+		// SessionStateListener is a concrete class with empty-body callbacks;
+		// only the callbacks that exist in the Android SDK are overridden here.
+		TestFairy.addSessionStateListener(new SessionStateListener() {
+			@Override
+			public void onSessionStarted(String sessionUrl) {
+				emitFromActiveModule(SESSION_STARTED_EVENT, singletonMap("sessionUrl", sessionUrl));
+			}
+
+			@Override
+			public void onSessionFailed() {
+				emitFromActiveModule(SESSION_FAILED_EVENT, Collections.<String, Object>emptyMap());
+			}
+
+			@Override
+			public void onSessionLengthReached(float secondsFromStartSession) {
+				emitFromActiveModule(
+						SESSION_LENGTH_REACHED_EVENT,
+						singletonMap("secondsFromStartSession", secondsFromStartSession));
+			}
+
+			@Override
+			public void onSessionStopped() {
+				emitFromActiveModule(SESSION_STOPPED_EVENT, Collections.<String, Object>emptyMap());
+			}
+
+			@Override
+			public void onAutoUpdateAvailable(String url) {
+				emitFromActiveModule(AUTO_UPDATE_AVAILABLE_EVENT, singletonMap("url", url));
+			}
+
+			@Override
+			public void onAutoUpdateDownloadStarted() {
+				emitFromActiveModule(
+						AUTO_UPDATE_DOWNLOAD_STARTED_EVENT, Collections.<String, Object>emptyMap());
+			}
+
+			@Override
+			public void onAutoUpdateDismissed() {
+				emitFromActiveModule(
+						AUTO_UPDATE_DISMISSED_EVENT, Collections.<String, Object>emptyMap());
+			}
+
+			@Override
+			public void onAutoUpdateDownloadFailed() {
+				emitFromActiveModule(
+						AUTO_UPDATE_DOWNLOAD_FAILED_EVENT, Collections.<String, Object>emptyMap());
+			}
+
+			@Override
+			public void onNoAutoUpdateAvailable() {
+				emitFromActiveModule(
+						NO_AUTO_UPDATE_AVAILABLE_EVENT, Collections.<String, Object>emptyMap());
+			}
+		});
+	}
+
+	private static Map<String, Object> singletonMap(String key, Object value) {
+		Map<String, Object> values = new HashMap<String, Object>();
+		values.put(key, value);
+		return values;
+	}
+
+	private static void emitFromActiveModule(String eventName, Map<String, Object> payload) {
+		WeakReference<TestFairyModule> reference = ACTIVE_MODULE.get();
+		TestFairyModule module = reference == null ? null : reference.get();
+
+		if (module == null) {
+			return;
+		}
+
+		module.emitEvent(eventName, payload);
+	}
+
+	private void emitEvent(String eventName, Map<String, Object> payload) {
+		ReactApplicationContext context = getReactApplicationContext();
+
+		if (!context.hasActiveReactInstance()) {
+			return;
+		}
+
+		context
+				.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+				.emit(eventName, Arguments.makeNativeMap(payload));
+	}
+
+	/**
+	 * Required by NativeEventEmitter.
+	 */
+	@ReactMethod
+	public void addListener(String eventName) {
+		// Listener accounting is maintained on the JavaScript side.
+	}
+
+	/**
+	 * Required by NativeEventEmitter.
+	 */
+	@ReactMethod
+	public void removeListeners(double count) {
+		// Listener accounting is maintained on the JavaScript side.
 	}
 
 	@ReactMethod
-	public void begin(final String appKey, ReadableMap map) {
+	public void begin(final String appKey, final ReadableMap options) {
+		beginWithoutCrashHandler(appKey, options);
+	}
+
+	@ReactMethod
+	public void beginWithoutCrashHandler(final String appKey, final ReadableMap options) {
+		final Map<String, String> safeOptions = convertToStringMap(options);
+
+		// Backtrace owns crashes. The crashless native artifact enforces this
+		// independently; forcing it here keeps the invariant visible everywhere.
+		safeOptions.put("enableCrashReporter", "false");
+
 		runOnUi(new Runnable() {
 			@Override
 			public void run() {
-				TestFairy.begin(getReactApplicationContext(), appKey);
+				TestFairy.beginWithoutCrashHandler(
+						getReactApplicationContext(), appKey, safeOptions);
 			}
 		});
 	}
@@ -113,16 +278,13 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void identify(final String identity, final ReadableMap map) {
+	public void identify(final String correlationId, final ReadableMap traits) {
+		final Map<String, Object> convertedTraits = convertToObjectMap(traits);
+
 		runOnUi(new Runnable() {
 			@Override
 			public void run() {
-				if (map == null) {
-					TestFairy.identify(identity, null);
-				} else {
-					final Map<String, Object> traits = convertMap(map);
-					TestFairy.identify(identity, traits);
-				}
+				TestFairy.identify(correlationId, convertedTraits);
 			}
 		});
 	}
@@ -132,7 +294,7 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
 		runOnUi(new Runnable() {
 			@Override
 			public void run() {
-				takeScreenshot();
+				TestFairy.takeScreenshot();
 			}
 		});
 	}
@@ -148,26 +310,6 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void pushFeedbackController() {
-		runOnUi(new Runnable() {
-			@Override
-			public void run() {
-				TestFairy.showFeedbackForm();
-			}
-		});
-	}
-
-	@ReactMethod
-	public void showFeedbackForm(final String appToken, final boolean takeScreenshot) {
-		runOnUi(new Runnable() {
-			@Override
-			public void run() {
-				TestFairy.showFeedbackForm(getReactApplicationContext(), appToken, takeScreenshot);
-			}
-		});
-	}
-
-	@ReactMethod
 	public void resume() {
 		runOnUi(new Runnable() {
 			@Override
@@ -178,21 +320,11 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void checkpoint(final String checkpoint) {
+	public void checkpoint(final String name) {
 		runOnUi(new Runnable() {
 			@Override
 			public void run() {
-				TestFairy.addEvent(checkpoint);
-			}
-		});
-	}
-
-	@ReactMethod
-	public void hideWebViewElements(final String cssSelector) {
-		runOnUi(new Runnable() {
-			@Override
-			public void run() {
-				TestFairy.hideWebViewElements(cssSelector);
+				TestFairy.addEvent(name);
 			}
 		});
 	}
@@ -222,27 +354,53 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
 		runOnUi(new Runnable() {
 			@Override
 			public void run() {
-				TestFairy.log("TFReactNative", message);
+				TestFairy.log("SauceMobileBetaReactNative", message);
 			}
 		});
 	}
 
+	@ReactMethod
+	public void getSessionUrl(final Promise promise) {
+		runOnUi(new Runnable() {
+			@Override
+			public void run() {
+				promise.resolve(TestFairy.getSessionUrl());
+			}
+		});
+	}
+
+	@ReactMethod
+	public void getVersion(final Promise promise) {
+		runOnUi(new Runnable() {
+			@Override
+			public void run() {
+				promise.resolve(TestFairy.getVersion());
+			}
+		});
+	}
+
+	/**
+	 * Retained for compatibility with older native bridge consumers.
+	 */
 	@ReactMethod
 	public void sessionUrl(final Callback callback) {
 		runOnUi(new Runnable() {
 			@Override
 			public void run() {
-				callback.invoke(TestFairy.getSessionUrl());
+				callback.invoke(null, TestFairy.getSessionUrl());
 			}
 		});
 	}
 
+	/**
+	 * Retained for compatibility with older native bridge consumers.
+	 */
 	@ReactMethod
 	public void version(final Callback callback) {
 		runOnUi(new Runnable() {
 			@Override
 			public void run() {
-				callback.invoke(TestFairy.getSessionUrl());
+				callback.invoke(null, TestFairy.getVersion());
 			}
 		});
 	}
@@ -288,11 +446,53 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void hideView(final int tag) {
+	public void pushFeedbackController() {
 		runOnUi(new Runnable() {
 			@Override
 			public void run() {
-				TestFairy.hideView(tag);
+				TestFairy.showFeedbackForm();
+			}
+		});
+	}
+
+	@ReactMethod
+	public void showFeedbackForm(final String appToken, final boolean takeScreenshot) {
+		runOnUi(new Runnable() {
+			@Override
+			public void run() {
+				TestFairy.showFeedbackForm(getReactApplicationContext(), appToken, takeScreenshot);
+			}
+		});
+	}
+
+	@ReactMethod
+	public void hideWebViewElements(final String cssSelector) {
+		runOnUi(new Runnable() {
+			@Override
+			public void run() {
+				TestFairy.hideWebViewElements(cssSelector);
+			}
+		});
+	}
+
+	@ReactMethod
+	public void hideView(final int reactTag) {
+		UIManagerModule uiManager =
+				getReactApplicationContext().getNativeModule(UIManagerModule.class);
+
+		if (uiManager == null) {
+			return;
+		}
+
+		uiManager.addUIBlock(new UIBlock() {
+			@Override
+			public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+				try {
+					View view = nativeViewHierarchyManager.resolveView(reactTag);
+					TestFairy.hideView(view);
+				} catch (Throwable error) {
+					Log.w(TAG, "Could not resolve React view " + reactTag, error);
+				}
 			}
 		});
 	}
@@ -300,16 +500,21 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
 	@ReactMethod
 	public void hideViewWithNativeId(final String nativeId) {
 		try {
-			proxy.hiddenNativeIds.add(nativeId);
-			Class OnMultipleViewsFoundListener = Class.forName("com.facebook.react.uimanager.util.ReactFindViewUtil$OnMultipleViewsFoundListener");
-			Class ReactFindViewUtil = Class.forName("com.facebook.react.uimanager.util.ReactFindViewUtil");
-			Method removeViewsListener = ReactFindViewUtil.getMethod("removeViewsListener", OnMultipleViewsFoundListener);
-			removeViewsListener.invoke(null, listener);
-			Method addViewsListener = ReactFindViewUtil.getMethod("addViewsListener", OnMultipleViewsFoundListener, Set.class);
-			addViewsListener.invoke(null, listener, proxy.hiddenNativeIds);
-		} catch (Exception ignored) {}
+			hiddenNativeIds.add(nativeId);
+
+			// Re-register with the updated id set; views appearing later with a
+			// hidden nativeID are hidden as soon as React mounts them.
+			ReactFindViewUtil.removeViewsListener(hiddenViewsListener);
+			ReactFindViewUtil.addViewsListener(hiddenViewsListener, hiddenNativeIds);
+		} catch (Throwable error) {
+			Log.w(TAG, "Could not hide view with nativeID " + nativeId, error);
+		}
 	}
 
+	/**
+	 * Crash reporting is unavailable in the crashless native artifact; the
+	 * native SDK turns this into a logged no-op.
+	 */
 	@ReactMethod
 	public void enableCrashHandler() {
 		runOnUi(new Runnable() {
@@ -415,6 +620,11 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
 		runOnUi(new Runnable() {
 			@Override
 			public void run() {
+				if (stack != null && !stack.isEmpty()) {
+					TestFairy.logThrowable(stack);
+					return;
+				}
+
 				TestFairy.logThrowable(new Exception(message));
 			}
 		});
@@ -422,182 +632,220 @@ public class TestFairyModule extends ReactContextBaseJavaModule {
 
 	@ReactMethod
 	public void setFeedbackOptions(final ReadableMap options) {
+		final FeedbackOptions.Builder builder = new FeedbackOptions.Builder();
+
+		if (options != null) {
+			if (options.hasKey("defaultText")
+					&& options.getType("defaultText") == ReadableType.String) {
+				builder.setDefaultText(options.getString("defaultText"));
+			}
+
+			if (options.hasKey("isEmailMandatory")
+					&& options.getType("isEmailMandatory") == ReadableType.Boolean) {
+				builder.setEmailMandatory(options.getBoolean("isEmailMandatory"));
+			}
+
+			if (options.hasKey("isEmailVisible")
+					&& options.getType("isEmailVisible") == ReadableType.Boolean) {
+				builder.setEmailFieldVisible(options.getBoolean("isEmailVisible"));
+			}
+
+			if (options.hasKey("isTakeScreenshotButtonVisible")
+					&& options.getType("isTakeScreenshotButtonVisible") == ReadableType.Boolean) {
+				builder.setTakeScreenshotButtonVisible(
+						options.getBoolean("isTakeScreenshotButtonVisible"));
+			}
+
+			if (options.hasKey("isTakeRecordingButtonVisible")
+					&& options.getType("isTakeRecordingButtonVisible") == ReadableType.Boolean) {
+				builder.setRecordVideoButtonVisible(
+						options.getBoolean("isTakeRecordingButtonVisible"));
+			}
+
+			if (options.hasKey("browserUrl")
+					&& options.getType("browserUrl") == ReadableType.String) {
+				builder.setBrowserUrl(options.getString("browserUrl"));
+			}
+		}
+
+		final FeedbackOptions feedbackOptions = builder.build();
+
 		runOnUi(new Runnable() {
 			@Override
 			public void run() {
-				FeedbackOptions.Builder feedbackOptions = new FeedbackOptions.Builder();
-								
-				if (options.hasKey("defaultText")) {
-					ReadableType defaultTextType = options.getType("defaultText");
-					if (defaultTextType == ReadableType.String) {
-						feedbackOptions.setDefaultText(options.getString("defaultText"));
-					}
-				}
-
-				if (options.hasKey("isEmailMandatory")) {
-					ReadableType isEmailMandatoryType = options.getType("isEmailMandatory");
-					if (isEmailMandatoryType == ReadableType.Boolean) {
-						feedbackOptions.setEmailMandatory(options.getBoolean("isEmailMandatory"));
-					}
-				}
-
-				if (options.hasKey("isEmailVisible")) {
-					ReadableType isEmailVisibleType = options.getType("isEmailVisible");
-					if (isEmailVisibleType == ReadableType.Boolean) {
-						feedbackOptions.setEmailFieldVisible(options.getBoolean("isEmailVisible"));
-					}
-				}
+				TestFairy.setFeedbackOptions(feedbackOptions);
 			}
 		});
 	}
 
 	@ReactMethod
-	public void attachFile(final String filename, final String content) {
-		if (filename == null) {
-			throw new RuntimeException("Cannot attach file without a name!");
+	public void attachFile(
+			final String filename,
+			final String content,
+			final String mimeType,
+			final Promise promise) {
+		if (filename == null || filename.trim().isEmpty()) {
+			promise.reject("invalid_filename", "filename must be a non-empty file name.");
+			return;
 		}
 
-		runOnUi(new Runnable() {
+		final String safeFilename = new File(filename).getName();
+
+		fileExecutor.execute(new Runnable() {
 			@Override
 			public void run() {
 				Context context = getReactApplicationContext();
-				File outputDir = context.getCacheDir();
-				try {
-					File tfTemp = new File(outputDir, "tfTemp");
-					if (tfTemp.exists()) {
-						deleteDir(tfTemp);
-					}
 
-					tfTemp.mkdir();
+				File root = new File(context.getCacheDir(), "SauceMobileBetaReactNative");
+				final File directory = new File(root, UUID.randomUUID().toString());
 
-					File outputFile = new File(tfTemp, filename);
-					FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
-
-					if (content != null) {
-						fileOutputStream.write(content.getBytes(Charset.forName("UTF-8")));
-					}
-
-					fileOutputStream.close();
-
-					TestFairy.attachFile(outputFile);
-				} catch (IOException e) {
-					throw new RuntimeException(e);
+				if (!directory.mkdirs() && !directory.isDirectory()) {
+					promise.reject(
+							"attachment_directory_failed",
+							"Could not create a temporary attachment directory.");
+					return;
 				}
+
+				final File outputFile = new File(directory, safeFilename);
+
+				try {
+					FileOutputStream outputStream = new FileOutputStream(outputFile);
+
+					try {
+						outputStream.write(
+								(content == null ? "" : content).getBytes(StandardCharsets.UTF_8));
+					} finally {
+						outputStream.close();
+					}
+				} catch (IOException error) {
+					promise.reject(
+							"attachment_write_failed", "Could not write the attachment.", error);
+					return;
+				}
+
+				runOnUi(new Runnable() {
+					@Override
+					public void run() {
+						TestFairy.attachFile(outputFile);
+						promise.resolve(null);
+					}
+				});
 			}
 		});
 	}
 
 	@ReactMethod
 	public void addNetworkEvent(
-			final String url, final String method, final int statusCode,
-			final Double startTimeMillis, final Double endTimeMillis,
-			final Double requestSize, final Double responseSize,
+			final String url,
+			final String method,
+			final int statusCode,
+			final double startTimeMillis,
+			final double endTimeMillis,
+			final double requestSize,
+			final double responseSize,
 			final String errorMessage,
-			final String requestHeaders, final String requestBody, final String responseHeaders, final String responseBody) {
+			final String requestHeaders,
+			final String requestBody,
+			final String responseHeaders,
+			final String responseBody) {
 		runOnUi(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					if (requestHeaders != null || requestBody != null || responseHeaders != null || responseBody != null) {
-						final Charset utf8 = Charset.forName("UTF-8");
+					URI uri = new URI(url);
 
+					if (requestHeaders != null
+							|| requestBody != null
+							|| responseHeaders != null
+							|| responseBody != null) {
 						TestFairy.addNetworkEvent(
-								new URI(url), method, statusCode, startTimeMillis.longValue(), endTimeMillis.longValue(),
-								requestSize.longValue(), responseSize.longValue(), errorMessage, requestHeaders,
-								requestBody != null ? requestBody.getBytes(utf8) : null, responseHeaders, responseBody != null ? responseBody.getBytes(utf8) : null);
-					} else {
-						TestFairy.addNetworkEvent(
-								new URI(url), method, statusCode, startTimeMillis.longValue(), endTimeMillis.longValue(),
-								requestSize.longValue(), responseSize.longValue(), errorMessage);
+								uri,
+								method,
+								statusCode,
+								(long) startTimeMillis,
+								(long) endTimeMillis,
+								(long) requestSize,
+								(long) responseSize,
+								errorMessage,
+								requestHeaders,
+								requestBody == null
+										? null
+										: requestBody.getBytes(StandardCharsets.UTF_8),
+								responseHeaders,
+								responseBody == null
+										? null
+										: responseBody.getBytes(StandardCharsets.UTF_8));
+						return;
 					}
-				} catch (Throwable e) {
-					Log.w("TestFairyModule", "Cannot add network event", e);
+
+					TestFairy.addNetworkEvent(
+							uri,
+							method,
+							statusCode,
+							(long) startTimeMillis,
+							(long) endTimeMillis,
+							(long) requestSize,
+							(long) responseSize,
+							errorMessage);
+				} catch (Throwable error) {
+					Log.w(TAG, "Could not add a network event.", error);
 				}
 			}
 		});
 	}
 
-	private Map<String, Object> convertMap(ReadableMap map) {
-		Map<String, Object> input = new HashMap<String, Object>();
+	private Map<String, String> convertToStringMap(ReadableMap map) {
+		Map<String, String> result = new HashMap<String, String>();
+
+		if (map == null) {
+			return result;
+		}
+
 		ReadableMapKeySetIterator iterator = map.keySetIterator();
+
 		while (iterator.hasNextKey()) {
 			String key = iterator.nextKey();
 			ReadableType type = map.getType(key);
+
 			switch (type) {
-				case Boolean:
-					input.put(key, map.getBoolean(key));
-					break;
 				case String:
-					input.put(key, map.getString(key));
+					result.put(key, map.getString(key));
 					break;
+
+				case Boolean:
+					result.put(key, Boolean.toString(map.getBoolean(key)));
+					break;
+
 				case Number:
-					input.put(key, map.getDouble(key));
+					result.put(key, Double.toString(map.getDouble(key)));
 					break;
-				case Array:
-					input.put(key, convertArray(map.getArray(key)));
+
+				case Null:
 					break;
-				case Map:
-					input.put(key, convertMap(map.getMap(key)));
+
 				default:
+					Object value = map.toHashMap().get(key);
+
+					if (value != null) {
+						result.put(key, String.valueOf(value));
+					}
+
 					break;
 			}
 		}
 
-		return input;
+		return result;
 	}
 
-	private ArrayList<Object> convertArray(ReadableArray array) {
-		ArrayList<Object> input = new ArrayList<Object>();
-		ReadableType singleType = null;
-		for (int index = 0; index < array.size(); index++) {
-			ReadableType type = array.getType(index);
-			if (singleType == null)
-				singleType = type;
-
-			if (type != singleType) {
-				Log.d("TestFairyModule", "Cannot mix types in array objects expecting type [" + singleType + "] found [" + type + "] in array. Skipping");
-				continue;
-			}
-
-			switch (type) {
-				case Boolean:
-					input.add(array.getBoolean(index));
-					break;
-				case String:
-					input.add(array.getString(index));
-					break;
-				case Number:
-					input.add(array.getDouble(index));
-					break;
-				case Array:
-					input.add(convertArray(array.getArray(index)));
-					break;
-				case Map:
-					input.add(convertMap(array.getMap(index)));
-				default:
-					break;
-			}
+	private Map<String, Object> convertToObjectMap(ReadableMap map) {
+		if (map == null) {
+			return new HashMap<String, Object>();
 		}
 
-		return input;
+		return map.toHashMap();
 	}
 
 	private void runOnUi(Runnable runnable) {
 		UiThreadUtil.runOnUiThread(runnable);
-	}
-
-	// To delete all contents recursively, like rm -rf
-	private static boolean deleteDir(File dir) {
-		if (dir.isDirectory()) {
-			String[] children = dir.list();
-			for (int i = 0; i < children.length; i++) {
-				boolean success = deleteDir(new File(dir, children[i]));
-				if (!success) {
-					return false;
-				}
-			}
-		}
-
-		return dir.delete();
 	}
 }
