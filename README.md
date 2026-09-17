@@ -90,19 +90,19 @@ Because of that, `react-native-testfairy` and `@saucelabs/mobile-beta-react-nati
 
 Native dependencies can be consumed from locally built artifacts under `local-native/` (gitignored) — see `local-native/README.md` for regeneration commands and Podfile/Gradle wiring.
 
-## Installing a release candidate
+## Installing from a GitHub Release
 
-Release candidates are distributed as GitHub pre-releases with the npm tarball
-attached, so no registry access is needed:
+Releases (pre-releases included) carry the npm tarball as a GitHub Release
+asset, so no registry access is needed:
 
 ```bash
-npm install https://github.com/testfairy/react-native-testfairy/releases/download/2.2.0-rc/saucelabs-mobile-beta-react-native-2.2.0-rc.tgz
+npm install https://github.com/testfairy/react-native-testfairy/releases/download/3.0.0-rc/saucelabs-mobile-beta-react-native-3.0.0-rc.tgz
 cd ios && pod install
 ```
 
 The package installs into `node_modules/@saucelabs/mobile-beta-react-native`
 and autolinks exactly like a registry install. (Installing from the git tag —
-`npm install github:testfairy/react-native-testfairy#2.2.0-rc` — also works,
+`npm install github:testfairy/react-native-testfairy#3.0.0-rc` — also works,
 but pulls the whole repository instead of the validated tarball.)
 
 ## Repository location
