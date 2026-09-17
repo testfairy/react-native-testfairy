@@ -153,5 +153,9 @@ printf '%s' "${PACK_OUTPUT}" | grep -q 'local-native/ios/TestFairy\.xcframework'
 
 printf '%s' "${PACK_OUTPUT}" | grep -q 'local-native/android/maven/.*sauce-mobile-beta-android' \
   || fail "npm package is missing the vendored Android Maven repository"
+# Build output leaking into the tarball (e.g. after an example-app build populates android/build) would ship megabytes of Gradle intermediates.
+if printf '%s' "${PACK_OUTPUT}" | grep -qE '"path": *"(android|ios)/build/'; then
+  fail "build output (android/build or ios/build) present in the npm tarball"
+fi
 
 echo "Sauce Mobile Beta React Native package validation passed."

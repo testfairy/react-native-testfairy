@@ -36,12 +36,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/saucelabs/mobile-beta-react-native.git"
+    "url": "git+https://github.com/testfairy/react-native-testfairy.git"
   },
   "bugs": {
-    "url": "https://github.com/saucelabs/mobile-beta-react-native/issues"
+    "url": "https://github.com/testfairy/react-native-testfairy/issues"
   },
-  "homepage": "https://github.com/saucelabs/mobile-beta-react-native#readme",
+  "homepage": "https://github.com/testfairy/react-native-testfairy#readme",
   "keywords": [
     "sauce-labs",
     "sauce-mobile-beta",

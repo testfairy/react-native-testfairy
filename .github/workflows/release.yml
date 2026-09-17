@@ -1,32 +1,91 @@
-name: Release TestFairy React Native SDK
+name: Release @saucelabs/mobile-beta-react-native
+# Publishes the package to npm on a bare semver tag (e.g. 2.2.0-rc) that must equal package.json's version. Provenance attestations require a public source repository whose URL matches package.json "repository".
 on:
   push:
     tags:
-      - '*.*.*'
+      - '[0-9]*.[0-9]*.[0-9]*'
+
+permissions:
+  contents: write   # attach the tarball to the GitHub Release
+  id-token: write   # npm provenance (Sigstore)
 
 jobs:
-  release:
-    runs-on: macos-latest
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '16.0.0'
-          registry-url: 'https://registry.npmjs.org'
-      - name: Update native SDK versions
-        if: startsWith(github.ref, 'refs/tags/')
+          node-version: 22
+          cache: npm
+
+      - name: Tag must match package.json version
         run: |
-          ANDROID_SDK_VERSION=1.12.31
-          IOS_VERSION=1.31.0
-          echo ${GITHUB_REF##*/} > RELEASE_TAG
-          sed -i '' "s/\"version\":.*/\"version\":\"$(cat RELEASE_TAG)\",/g" package.json
-          sed -i '' "s/com.testfairy:testfairy-android-sdk:.*/com.testfairy:testfairy-android-sdk:${ANDROID_SDK_VERSION}@aar'/" android/build.gradle
-          sed -i '' "s/  s.dependency \"TestFairy\".*/  s.dependency \"TestFairy\", \"${IOS_VERSION}\"/" React-TestFairy.podspec
-      - name: Install dependencies
-        if: startsWith(github.ref, 'refs/tags/')
-        run: npm install
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if [ "${GITHUB_REF_NAME}" != "${PKG_VERSION}" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match package.json version ${PKG_VERSION}"
+            exit 1
+          fi
+
+      - run: npm ci
+
+      # prepack runs lint, tests, typecheck and the crashless package validator
+      # against the canonical identity (@saucelabs/mobile-beta-react-native).
+      - name: Gate (pack)
+        run: npm pack --dry-run
+
+      # Always produce the release tarball: the GitHub Release is a complete
+      # distribution channel on its own (npm installs from the asset URL), so a
+      # tag yields an installable RC even when no npm registry access exists.
+      - name: Pack for release
+        run: npm pack --ignore-scripts
+
+      # npm registry publishing is a switch — repository variable NPM_PUBLISH_MODE:
+      #   (unset)  skip the registry; GitHub Release tarball only
+      #   token    publish with the NPM_TOKEN secret (granular token whose account
+      #            may publish the chosen name)
+      #   oidc     publish via npm Trusted Publishing (repo+workflow configured
+      #            as the package's trusted publisher on npmjs.com)
+      # Optional NPM_PUBLISH_NAME variable publishes under another name (e.g.
+      # @testfairy/mobile-beta-react-native or react-native-testfairy) while the
+      # repo keeps its canonical identity — only the published manifest changes.
       - name: Publish to npm
-        if: startsWith(github.ref, 'refs/tags/')
-        run: npm publish
+        if: vars.NPM_PUBLISH_MODE == 'token' || vars.NPM_PUBLISH_MODE == 'oidc'
+        run: |
+          if [ -n "${PUBLISH_NAME}" ]; then
+            npm pkg set name="${PUBLISH_NAME}"
+            echo "Publishing as ${PUBLISH_NAME}"
+          fi
+          if [ "${PUBLISH_MODE}" = "token" ]; then
+            [ -n "${NODE_AUTH_TOKEN}" ] || { echo "NPM_PUBLISH_MODE=token but NPM_TOKEN is empty"; exit 1; }
+            echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > "${HOME}/.npmrc"
+          else
+            npm install -g npm@latest   # trusted publishing needs npm >= 11.5
+          fi
+          # Pre-releases (2.2.0-rc) go to the "next" dist-tag: npm would
+          # otherwise move "latest" to them — fatal under the legacy
+          # react-native-testfairy name, where latest is 2.65.0.
+          DIST_TAG=latest
+          case "${GITHUB_REF_NAME}" in *-*) DIST_TAG=next;; esac
+          # --ignore-scripts: the gate already ran; the validator asserts the
+          # canonical name and must not re-run after a name override.
+          npm publish --ignore-scripts --provenance --access public --tag "${DIST_TAG}"
         env:
+          PUBLISH_MODE: ${{ vars.NPM_PUBLISH_MODE }}
+          PUBLISH_NAME: ${{ vars.NPM_PUBLISH_NAME }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "@saucelabs/mobile-beta-react-native ${{ github.ref_name }}"
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          files: "*.tgz"
+          body: |
+            Install without the npm registry:
+
+                npm install https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/saucelabs-mobile-beta-react-native-${{ github.ref_name }}.tgz
+
+            Then `cd ios && pod install` (iOS) — React Native autolinking picks the
+            package up from node_modules like any registry install.

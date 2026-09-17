@@ -9,3 +9,7 @@ __tests__
 jest.config.cjs
 tsconfig.types.json
 *.tgz
+
+# native build output must never ship or be committed
+android/build/
+ios/build/

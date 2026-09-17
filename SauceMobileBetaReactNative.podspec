@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
   s.author       = { "Sauce Labs" => "support@saucelabs.com" }
 
   s.source = {
-    :git => "https://github.com/saucelabs/mobile-beta-react-native.git",
+    :git => "https://github.com/testfairy/react-native-testfairy.git",
     :tag => "#{s.version}"
   }
 
