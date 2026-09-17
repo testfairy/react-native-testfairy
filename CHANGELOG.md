@@ -1,9 +1,9 @@
 # Changelog
 
-## 2.0.0
+## 2.2.0-rc
 
 - Package renamed: `react-native-testfairy` to `@saucelabs/mobile-beta-react-native`.
-- Native dependencies switched to the crashless Sauce Mobile Beta artifacts (iOS pod `SauceMobileBeta` 2.0.0, Android `com.saucelabs.mobilebeta:sauce-mobile-beta-android` 2.0.0). Backtrace is the sole crash owner.
+- Native dependencies switched to the crashless Sauce Mobile Beta artifacts (iOS `SauceMobileBeta` 2.2.0-rc via SwiftPM / vendored xcframework, Android `com.saucelabs.mobilebeta:sauce-mobile-beta-android:2.2.0-rc` on maven.testfairy.com). Backtrace is the sole crash owner.
 - `begin()` is now crashless and delegates to the new `beginWithoutCrashHandler()`: `enableCrashHandler()`/`disableCrashHandler()` are retained as no-ops.
 - New APIs: 
   `beginWithoutCrashHandler`, 

@@ -7,7 +7,7 @@ A future release will fetch these binaries dynamically instead of vendoring them
 ## Contents
 
 - `ios/TestFairy.xcframework` — crashless iOS artifact (module stays `TestFairy`), vendored by `SauceMobileBetaReactNative.podspec`.
-- `android/maven/` — a local Maven repository containing `com.saucelabs.mobilebeta:sauce-mobile-beta-android:2.0.0` (AAR + POM + sources/javadoc), picked up automatically by `android/build.gradle`.
+- `android/maven/` — a local Maven repository containing `com.saucelabs.mobilebeta:sauce-mobile-beta-android:2.2.0-rc` (AAR + POM + sources/javadoc), picked up automatically by `android/build.gradle`.
 
 ## Provenance
 
@@ -15,29 +15,32 @@ Record the source revision here whenever a binary is regenerated:
 
 | Artifact | Version | Source repo | Revision |
 | --- | --- | --- | --- |
-| `ios/TestFairy.xcframework` | 2.0.0 | testfairy-ios-sdk | 75d461d (feature/SauceMobileAppDistribution) |
-| `android/maven/.../2.0.0` | 2.0.0 | testfairy-android-sdk | 0f2b431e (feature/SauceMobileAppDistribution) |
+| `ios/TestFairy.xcframework` | 2.2.0-rc | testfairy-ios-sdk | ae0fb53e (tag smb-2.2.0-rc; bytes = released S3 zip, sha256 c647a49f…) |
+| `android/maven/.../2.2.0-rc` | 2.2.0-rc | testfairy-android-sdk | 25868780 (tag smb-2.2.0-rc; bytes = published maven.testfairy.com set) |
 
 ## Regenerating
 
-iOS (from `testfairy-ios-sdk`, requires Xcode). The version placeholder must be stamped before building. `TestFairy.getVersion()` returns the literal string `SDK_VERSION` otherwise:
+Preferred source for a release: the published artifacts themselves (SwiftPM package and maven.testfairy.com : vendored bytes are identical to what native consumers get).
+The manual builds below are for development only.
+
+iOS (from `testfairy-ios-sdk`, requires Xcode). `make stamp-version` stamps `kSDKVersion`, `kGitRevision`, and the framework Info.plist (without it the binary ships the literal placeholders (`getVersion()` returns `SDK_VERSION`)):
 
 ```bash
-sed -i '' 's|@"SDK_VERSION"|@"2.0.0"|' Husky/TestFairyConstants.h
-make xcframework-crashless
+make stamp-version VERSION=2.2.0-rc
+make dist/xcframework-crashless VERSION=2.2.0-rc
 rm -rf ../react-native-testfairy/local-native/ios/TestFairy.xcframework
 cp -R build/Release-xcframework-crashless/TestFairy.xcframework \
   ../react-native-testfairy/local-native/ios/
-git checkout -- Husky/TestFairyConstants.h
+git checkout -- Husky/TestFairyConstants.h TestFairySDK/Info.plist
 ```
 
 Android (from `testfairy-android-sdk`, requires JDK 11. run in a scratch worktree because the version placeholders are seded into tracked files):
 
 ```bash
-sed -i '' 's|SET_ME|2.0.0|' sauce-mobile-beta-android/build.gradle tools/publish/publish-to-maven
-sed -i '' 's|SDK_VERSION_TO_REPLACE|2.0.0|' core-commons/src/main/java/com/testfairy/Config.kt
-tools/publish/build-mobile-beta-artifacts 2.0.0
-tools/publish/verify-mobile-beta-publication 2.0.0 "$PWD/sauce-mobile-beta-android/build/test-maven"
+sed -i '' 's|SET_ME|2.2.0-rc|' sauce-mobile-beta-android/build.gradle tools/publish/publish-to-maven
+sed -i '' 's|SDK_VERSION_TO_REPLACE|2.2.0-rc|' core-commons/src/main/java/com/testfairy/Config.kt
+tools/publish/build-mobile-beta-artifacts 2.2.0-rc
+tools/publish/verify-mobile-beta-publication 2.2.0-rc "$PWD/sauce-mobile-beta-android/build/test-maven"
 cp -R sauce-mobile-beta-android/build/test-maven \
   ../react-native-testfairy/local-native/android/maven
 ```

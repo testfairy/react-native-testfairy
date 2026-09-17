@@ -1,6 +1,6 @@
 {
   "name": "@saucelabs/mobile-beta-react-native",
-  "version": "2.0.0",
+  "version": "2.2.0-rc",
   "description": "Sauce Mobile Beta SDK for React Native, formerly TestFairy. Crashless and designed to coexist with Backtrace Error Reporting.",
   "main": "./index.js",
   "types": "./index.d.ts",
@@ -70,8 +70,8 @@
     "typescript": "^5.8.3"
   },
   "sauceMobileBetaNative": {
-    "ios": "2.0.0",
-    "android": "2.0.0"
+    "ios": "2.2.0-rc",
+    "android": "2.2.0-rc"
   },
   "publishConfig": {
     "access": "public",

@@ -94,9 +94,12 @@ while IFS= read -r binary; do
     fail "crash-reporter strings found in ${binary}"
   fi
   # A binary built without stamping the release version reports the literal
-  # placeholder from TestFairyConstants.h via getVersion().
+  # placeholders from TestFairyConstants.h via getVersion()/the agent version.
   if strings "${binary}" 2>/dev/null | grep -qx 'SDK_VERSION'; then
     fail "unstamped SDK_VERSION placeholder in ${binary}"
+  fi
+  if strings "${binary}" 2>/dev/null | grep -qx 'GIT_REVISION'; then
+    fail "unstamped GIT_REVISION placeholder in ${binary}"
   fi
 done < <(find "${XCFRAMEWORK}" -type f)
 [[ "${MACHO_COUNT}" -gt 0 ]] || fail "no Mach-O binaries found in ${XCFRAMEWORK}"
