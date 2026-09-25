@@ -20,15 +20,26 @@ Sauce Mobile Beta is crashless.
 ## Initialization order
 
 ```ts
-const backtrace = BacktraceClient.initialize(backtraceConfiguration);
+import 'react-native-get-random-values'; // must be imported before uuid on React Native
+import { v4 as uuidv4 } from 'uuid';
 
-TestFairy.setCorrelationId(correlationId);
+const correlationId = uuidv4(); // lowercase UUID v4, once per app launch, before either SDK
+
+const backtrace = BacktraceClient.initialize({
+  ...backtraceConfiguration,
+  userAttributes: { 'sauce.correlation_id': correlationId },
+});
+
+TestFairy.setAttribute('sauce.correlation_id', correlationId);
 TestFairy.beginWithoutCrashHandler(sauceMobileBetaToken);
 ```
 
+Do not use `setCorrelationId` or `identify` for this:
+both are deprecated and write the user-identity field (the same one `setUserId` writes), so they would collide with a real user id. Keep `setUserId` for the actual user.
+
 ## Correlation attributes
 
-Set the same values in both systems:
+Generate `sauce.correlation_id` once per app launch (lowercase UUID v4) before initializing either SDK, and set the same values in both systems:
 
 ```
 sauce.correlation_id
@@ -41,16 +52,19 @@ mad.distribution_id
 
 ## Session URL
 
-Subscribe before starting Sauce Mobile Beta; the session URL is asynchronous:
+Subscribe before starting Sauce Mobile Beta; the session URL is asynchronous.
+One launch can produce several sessions (after `stop()`/resume), overwrite the attribute on every callback:
 
 ```ts
 TestFairy.addSessionStateListener({
   onSessionStarted({ sessionUrl }) {
-    if (sessionUrl) {
-      backtrace.addAttribute({
-        'sauce.mobile_beta.session_url': sessionUrl,
-      });
-    }
+    backtrace.addAttribute({
+      'sauce.mobile_beta.session_started': 'true',
+      'sauce.mobile_beta.session_url': sessionUrl ?? '',
+    });
+  },
+  onSessionFailed() {
+    backtrace.addAttribute({ 'sauce.mobile_beta.session_started': 'false' });
   },
 });
 ```
