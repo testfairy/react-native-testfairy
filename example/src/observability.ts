@@ -15,7 +15,8 @@ export interface ObservabilityConfiguration {
   environment: string;
   release: string;
   dist: string;
-  distributionId: string;
+  /** Mobile App Distribution id; reported as mad.distribution_id only when set. */
+  distributionId?: string;
   userId?: string;
 }
 
@@ -41,7 +42,9 @@ export function initializeObservability(
     'sauce.environment': configuration.environment,
     'sauce.release': configuration.release,
     'sauce.dist': configuration.dist,
-    'mad.distribution_id': configuration.distributionId,
+    ...(configuration.distributionId
+      ? { 'mad.distribution_id': configuration.distributionId }
+      : {}),
   };
 
   const backtraceConfiguration: BacktraceConfiguration = {
@@ -68,24 +71,25 @@ export function initializeObservability(
   // asynchronously once the session is accepted by the server.
   const sessionSubscription = TestFairy.addSessionStateListener({
     onSessionStarted({ sessionUrl }) {
+      // Overwritten on every session start: one launch can produce several sessions (stop()/resume), each with its own URL.
+      // String values keep the attribute type identical across iOS, Android and React Native.
       backtrace.addAttribute({
-        'sauce.mobile_beta.session_started': true,
-        ...(sessionUrl
-          ? { 'sauce.mobile_beta.session_url': sessionUrl }
-          : {}),
+        'sauce.mobile_beta.session_started': 'true',
+        'sauce.mobile_beta.session_url': sessionUrl ?? '',
       });
     },
 
     onSessionFailed() {
       backtrace.addAttribute({
-        'sauce.mobile_beta.session_started': false,
+        'sauce.mobile_beta.session_started': 'false',
       });
     },
   });
 
-  // Set shared identity before session initialization; the native SDK retains
-  // these values and attaches them to the Sauce Mobile Beta session.
-  TestFairy.setCorrelationId(correlationId);
+  // Identity and attributes are set before session initialization;
+  // the native SDK retains them and attaches them to every Sauce Mobile Beta session.
+  // The correlation id travels as the `sauce.correlation_id` attribute below.
+  // `setCorrelationId`/`identify` are deprecated and write the user-identity field and are not used for it.
 
   if (configuration.userId) {
     TestFairy.setUserId(configuration.userId);

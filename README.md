@@ -55,7 +55,7 @@ TestFairy.beginWithoutCrashHandler('<sauce-mobile-beta-token>');
 
 ## Backtrace coexistence
 
-Initialize Backtrace first, then Sauce Mobile Beta, and give both the same correlation identifiers.
+Initialize Backtrace first, then Sauce Mobile Beta, and give both the same `sauce.correlation_id` attribute (a lowercase UUID v4 generated once per launch).
 See [docs/backtrace-coexistence.md](docs/backtrace-coexistence.md) for the full guide and [example/src/observability.ts](example/src/observability.ts) for a working setup.
 
 ## Session state
