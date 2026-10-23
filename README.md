@@ -55,17 +55,32 @@ TestFairy.beginWithoutCrashHandler('<sauce-mobile-beta-token>');
 
 ## Backtrace coexistence
 
-Initialize Backtrace first, then Sauce Mobile Beta, and give both the same `sauce.correlation_id` attribute (a lowercase UUID v4 generated once per launch).
+Two steps: initialize Backtrace first, then start Sauce Mobile Beta. The SDK generates a new `sauce.correlation_id` at every session start, attaches it to the session, and writes it (with `sauce.mobile_beta.session_started`, `sauce.mobile_beta.session_url`, `sauce.sdk.coexistence_mode`, `sauce.release`, `sauce.dist`) to `BacktraceClient.instance` from `@backtrace/react-native` (0.2.3 or later):
+
+```ts
+import { BacktraceClient } from '@backtrace/react-native';
+import TestFairy from '@saucelabs/mobile-beta-react-native';
+
+BacktraceClient.initialize(backtraceConfiguration);
+TestFairy.beginWithoutCrashHandler('<sauce-mobile-beta-token>');
+```
+
+No glue code is needed. `TestFairy.setBacktraceClient(client)` links a client explicitly when it is wrapped behind your own module or your Metro configuration does not resolve optional dependencies (`null` restores the automatic link). Do not set `sauce.correlation_id` yourself: one launch can contain several sessions and each gets its own id.
 See [docs/backtrace-coexistence.md](docs/backtrace-coexistence.md) for the full guide and [example/src/observability.ts](example/src/observability.ts) for a working setup.
 
 ## Session state
 
 ```js
 const subscription = TestFairy.addSessionStateListener({
-  onSessionStarted({ sessionUrl }) {
-    console.log(sessionUrl);
+  onSessionStarted({ sessionUrl, correlationId }) {
+    console.log(sessionUrl, correlationId);
+  },
+  onSessionCorrelationIdChanged({ correlationId }) {
+    console.log(correlationId); // new at every session start
   },
 });
+
+const correlationId = await TestFairy.getSessionCorrelationId(); // null before the first start
 
 subscription.remove();
 ```
@@ -88,21 +103,21 @@ Because of that, `react-native-testfairy` and `@saucelabs/mobile-beta-react-nati
 
 ## Local development
 
-Native dependencies can be consumed from locally built artifacts under `local-native/` (gitignored) — see `local-native/README.md` for regeneration commands and Podfile/Gradle wiring.
+The native SDK binaries are vendored under `local-native/` (tracked, and shipped in the npm tarball) — see `local-native/README.md` for the provenance table, the re-vendoring commands and the Podfile/Gradle wiring.
 
 ## Installing from a GitHub Release
 
-Releases (pre-releases included) carry the npm tarball as a GitHub Release
+Releases carry the npm tarball as a GitHub Release
 asset, so no registry access is needed:
 
 ```bash
-npm install https://github.com/testfairy/react-native-testfairy/releases/download/3.0.0-rc/saucelabs-mobile-beta-react-native-3.0.0-rc.tgz
+npm install https://github.com/testfairy/react-native-testfairy/releases/download/3.1.0/saucelabs-mobile-beta-react-native-3.1.0.tgz
 cd ios && pod install
 ```
 
 The package installs into `node_modules/@saucelabs/mobile-beta-react-native`
 and autolinks exactly like a registry install. (Installing from the git tag —
-`npm install github:testfairy/react-native-testfairy#3.0.0-rc` — also works,
+`npm install github:testfairy/react-native-testfairy#3.1.0` — also works,
 but pulls the whole repository instead of the validated tarball.)
 
 ## Repository location
