@@ -80,6 +80,20 @@ grep -q 'beginWithoutCrashHandler' \
 XCFRAMEWORK="local-native/ios/TestFairy.xcframework"
 [[ -d "${XCFRAMEWORK}" ]] || fail "missing vendored iOS artifact: ${XCFRAMEWORK}"
 
+# The bridges are written against the native API of the pinned versions
+# (sauceMobileBetaNative in package.json): the vendored binaries must be those
+# versions, not an older re-vendor left behind.
+IOS_PIN="$(node -p "require('./package.json').sauceMobileBetaNative.ios")"
+ANDROID_PIN="$(node -p "require('./package.json').sauceMobileBetaNative.android")"
+for slice in "${XCFRAMEWORK}"/*/TestFairy.framework; do
+  [[ -f "${slice}/Headers/TestFairySPI.h" ]] \
+    || fail "vendored xcframework slice ${slice} lacks Headers/TestFairySPI.h (needs sauceMobileBetaNative.ios ${IOS_PIN})"
+  grep -q 'explicit module SPI' "${slice}/Modules/module.modulemap" \
+    || fail "vendored module.modulemap in ${slice} has no explicit SPI submodule"
+  grep -q 'sessionCorrelationId' "${slice}/Headers/TestFairy.h" \
+    || fail "vendored TestFairy.h in ${slice} predates the correlation-id API"
+done
+
 IOS_FORBIDDEN='(_plcrash|PLCrash|TFCrashReportingFeature|TestFairyCrashManager|TFDefaultCrashManagerDelegate|TFImmediateCrashManagerDelegate|libCrashReporter)'
 MACHO_COUNT=0
 while IFS= read -r binary; do
@@ -101,12 +115,16 @@ while IFS= read -r binary; do
   if strings "${binary}" 2>/dev/null | grep -qx 'GIT_REVISION'; then
     fail "unstamped GIT_REVISION placeholder in ${binary}"
   fi
+  # kSDKVersion is stamped verbatim, so the exact pin shows up as a line.
+  if ! strings "${binary}" 2>/dev/null | grep -qx "${IOS_PIN}"; then
+    fail "vendored iOS binary ${binary} is not stamped ${IOS_PIN} (sauceMobileBetaNative.ios)"
+  fi
 done < <(find "${XCFRAMEWORK}" -type f)
 [[ "${MACHO_COUNT}" -gt 0 ]] || fail "no Mach-O binaries found in ${XCFRAMEWORK}"
 
-AAR="$(find local-native/android/maven -name 'sauce-mobile-beta-android-*.aar' \
-  ! -name '*-sources.jar' ! -name '*-javadoc.jar' | head -1)"
-[[ -n "${AAR}" && -f "${AAR}" ]] || fail "missing vendored Android AAR under local-native/android/maven"
+AAR="$(find local-native/android/maven -name "sauce-mobile-beta-android-${ANDROID_PIN}.aar" | head -1)"
+[[ -n "${AAR}" && -f "${AAR}" ]] \
+  || fail "missing vendored Android AAR sauce-mobile-beta-android-${ANDROID_PIN}.aar under local-native/android/maven (sauceMobileBetaNative.android)"
 
 AAR_TMP="$(mktemp -d)"
 trap 'rm -rf "${AAR_TMP}"' EXIT

@@ -10,11 +10,26 @@ TestFairy.begin('token');
 
 TestFairy.setCorrelationId('correlation-id');
 TestFairy.setUserId('user-123');
-TestFairy.setAttribute('sauce.sdk.coexistence_mode', 'backtrace_crash_owner');
+TestFairy.setAttribute('sauce.environment', 'beta');
+
+// Backtrace is linked automatically through BacktraceClient.instance; the
+// explicit link takes any object with addAttribute(map), null restores it.
+TestFairy.setBacktraceClient({
+  addAttribute(attributes) {
+    const correlationId: string | undefined = attributes['sauce.correlation_id'];
+    console.log(correlationId, attributes['sauce.mobile_beta.session_url']);
+  },
+});
+TestFairy.setBacktraceClient(null);
 
 const listener = TestFairy.addSessionStateListener({
-  onSessionStarted({ sessionUrl }) {
-    console.log(sessionUrl);
+  onSessionStarted({ sessionUrl, correlationId }) {
+    console.log(sessionUrl, correlationId);
+  },
+
+  onSessionCorrelationIdChanged({ correlationId }) {
+    const id: string = correlationId;
+    console.log(id);
   },
 
   onSessionFailed() {
@@ -29,7 +44,9 @@ const listener = TestFairy.addSessionStateListener({
 listener.remove();
 
 const events: string = TestFairy.SESSION_EVENTS.started;
-console.log(events);
+const correlationEvent: string =
+  TestFairy.SESSION_EVENTS.sessionCorrelationIdChanged;
+console.log(events, correlationEvent);
 
 TestFairy.enableCrashHandler();
 TestFairy.disableCrashHandler();
@@ -51,6 +68,7 @@ TestFairy.enableNetworkLogging(
 TestFairy.disableNetworkLogging();
 
 void TestFairy.getSessionUrl();
+void TestFairy.getSessionCorrelationId().then((id: string | null) => id);
 void TestFairy.getVersion();
 void TestFairy.attachFile('diagnostics.txt', 'contents', 'text/plain');
 

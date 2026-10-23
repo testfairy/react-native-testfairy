@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
     :tag => "#{s.version}"
   }
 
-  s.platform = :ios, "12.0"
+  s.platform = :ios, "13.0"
   s.source_files = "ios/**/*.{h,m,mm}"
   s.requires_arc = true
   s.static_framework = true

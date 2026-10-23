@@ -1,4 +1,5 @@
 #import "RCTTestFairyBridge.h"
+#import <TestFairy/TestFairySPI.h>
 
 #import <React/RCTConvert.h>
 #import <React/RCTLog.h>
@@ -18,6 +19,89 @@ static NSString *const SMBAutoUpdateDownloadStartedEvent = @"SauceMobileBetaAuto
 static NSString *const SMBAutoUpdateDismissedEvent = @"SauceMobileBetaAutoUpdateDismissed";
 static NSString *const SMBAutoUpdateDownloadFailedEvent = @"SauceMobileBetaAutoUpdateDownloadFailed";
 static NSString *const SMBNoAutoUpdateAvailableEvent = @"SauceMobileBetaNoAutoUpdateAvailable";
+static NSString *const SMBSessionCorrelationIdChangedEvent = @"SauceMobileBetaSessionCorrelationIdChanged";
+
+// Internal event carrying the SDK-managed crash-reporter attributes
+// (sauce.correlation_id, sauce.mobile_beta.session_started, ...) from the
+// native sink to the JavaScript layer, which applies them to Backtrace.
+static NSString *const SMBCrashReporterAttributesEvent = @"SauceMobileBetaCrashReporterAttributes";
+
+// The native crash-reporter attribute sink (an internal SDK entry point, see
+// TestFairySPI.h) is registered exactly once per process (not in
+// startObserving: setSessionStateDelegate: adds a delegate on every JavaScript
+// reload, and the SDK holds a single sink). The sink forwards each snapshot to
+// whichever bridge instance is currently active and keeps the last snapshot so a
+// freshly loaded JavaScript side can pull it after begin. The JavaScript side
+// applies the snapshot to @backtrace/react-native, whose iOS crash reporter is
+// not the backtrace-cocoa client the native SDK links on its own.
+static __weak RCTTestFairyBridge *SMBActiveBridge = nil;
+static NSDictionary<NSString *, NSString *> *SMBLastCrashReporterAttributes = nil;
+static dispatch_once_t SMBCrashReporterAttributeSinkToken;
+
+@interface RCTTestFairyBridge ()
+- (void)sendSessionEvent:(NSString *)eventName body:(id)body;
+@end
+
+static NSDictionary<NSString *, NSString *> *SMBLastCrashReporterAttributesSnapshot(void) {
+	@synchronized([RCTTestFairyBridge class]) {
+		return SMBLastCrashReporterAttributes;
+	}
+}
+
+static void SMBRegisterCrashReporterAttributeSinkOnce(void) {
+	dispatch_once(&SMBCrashReporterAttributeSinkToken, ^{
+		[TestFairy tf_setCrashReporterAttributeSinkWithBlock:^(NSDictionary<NSString *, NSString *> *attributes) {
+			// Called synchronously on the thread that starts the session.
+			// Copy first: the SDK may reuse its own mutable dictionary.
+			NSDictionary<NSString *, NSString *> *snapshot = attributes == nil ? @{} : [attributes copy];
+
+			@synchronized([RCTTestFairyBridge class]) {
+				SMBLastCrashReporterAttributes = snapshot;
+			}
+
+			RCTTestFairyBridge *activeBridge = SMBActiveBridge;
+			[activeBridge sendSessionEvent:SMBCrashReporterAttributesEvent
+									  body:@{@"attributes": snapshot}];
+		}];
+	});
+}
+
+// Session-state delegate. The SDK keeps every delegate it is given
+// (setSessionStateDelegate: appends, nothing removes), so registering each
+// bridge instance leaked one instance per JavaScript reload and delivered
+// duplicate events. One forwarder is registered once per process and relays
+// every callback to the active bridge instance (messaging nil is a no-op).
+@interface SMBSessionStateForwarder : NSObject <TestFairySessionStateDelegate>
+@end
+
+static SMBSessionStateForwarder *SMBSessionStateForwarderInstance = nil;
+static dispatch_once_t SMBSessionStateDelegateToken;
+
+static void SMBRegisterSessionStateDelegateOnce(void) {
+	dispatch_once(&SMBSessionStateDelegateToken, ^{
+		SMBSessionStateForwarderInstance = [[SMBSessionStateForwarder alloc] init];
+		SMBSessionStateForwarder *forwarder = SMBSessionStateForwarderInstance;
+		if ([NSThread isMainThread]) {
+			[TestFairy setSessionStateDelegate:forwarder];
+		} else {
+			dispatch_async(dispatch_get_main_queue(), ^{
+				[TestFairy setSessionStateDelegate:forwarder];
+			});
+		}
+	});
+}
+
+@implementation SMBSessionStateForwarder
+- (void)sessionStarted { [SMBActiveBridge sessionStarted]; }
+- (void)sessionCorrelationIdDidChange:(NSString *)correlationId { [SMBActiveBridge sessionCorrelationIdDidChange:correlationId]; }
+- (void)sessionFailed { [SMBActiveBridge sessionFailed]; }
+- (void)sessionLengthReached:(float)secondsFromStartSession { [SMBActiveBridge sessionLengthReached:secondsFromStartSession]; }
+- (void)sessionStopped { [SMBActiveBridge sessionStopped]; }
+- (void)autoUpdateAvailable:(NSString *)url { [SMBActiveBridge autoUpdateAvailable:url]; }
+- (void)autoUpdateDownloadStarted { [SMBActiveBridge autoUpdateDownloadStarted]; }
+- (void)autoUpdateDismissed { [SMBActiveBridge autoUpdateDismissed]; }
+- (void)noAutoUpdateAvailable { [SMBActiveBridge noAutoUpdateAvailable]; }
+@end
 
 @implementation RCTTestFairyBridge {
 	BOOL _hasJavaScriptListeners;
@@ -29,6 +113,18 @@ RCT_EXPORT_MODULE(TestFairyBridge);
 
 + (BOOL)requiresMainQueueSetup {
 	return YES;
+}
+
+- (instancetype)init {
+	self = [super init];
+
+	if (self) {
+		SMBActiveBridge = self;
+		SMBRegisterCrashReporterAttributeSinkOnce();
+		SMBRegisterSessionStateDelegateOnce();
+	}
+
+	return self;
 }
 
 - (NSDictionary *)constantsToExport {
@@ -49,24 +145,24 @@ RCT_EXPORT_MODULE(TestFairyBridge);
 		SMBAutoUpdateDownloadStartedEvent,
 		SMBAutoUpdateDismissedEvent,
 		SMBAutoUpdateDownloadFailedEvent,
-		SMBNoAutoUpdateAvailableEvent
+		SMBNoAutoUpdateAvailableEvent,
+		SMBSessionCorrelationIdChangedEvent,
+		SMBCrashReporterAttributesEvent
 	];
 }
 
 - (void)startObserving {
+	// The SDK delegate is the process-wide forwarder registered in init; this
+	// instance only has to become the active target.
 	_hasJavaScriptListeners = YES;
-
-	dispatch_async(dispatch_get_main_queue(), ^{
-		[TestFairy setSessionStateDelegate:self];
-	});
+	SMBActiveBridge = self;
 }
 
 - (void)stopObserving {
+	// Dropping the flag is enough: sendSessionEvent:body: discards events while
+	// no JavaScript listener is attached, and a new bridge instance becomes the
+	// active one through init/startObserving.
 	_hasJavaScriptListeners = NO;
-
-	dispatch_async(dispatch_get_main_queue(), ^{
-		[TestFairy setSessionStateDelegate:nil];
-	});
 }
 
 - (NSMutableDictionary *)safeBeginOptions:(NSDictionary *)options {
@@ -236,6 +332,28 @@ RCT_EXPORT_METHOD(getSessionUrl:(RCTPromiseResolveBlock)resolve
 	[self runOnMainQueue:^{
 		NSString *sessionUrl = [TestFairy sessionUrl];
 		resolve(sessionUrl.length > 0 ? sessionUrl : [NSNull null]);
+	}];
+}
+
+RCT_EXPORT_METHOD(getSessionCorrelationId:(RCTPromiseResolveBlock)resolve
+								   reject:(RCTPromiseRejectBlock)reject) {
+	[self runOnMainQueue:^{
+		NSString *correlationId = [TestFairy sessionCorrelationId];
+		resolve(correlationId.length > 0 ? correlationId : [NSNull null]);
+	}];
+}
+
+// Internal: the last snapshot handed to the native sink, or null before the
+// first session start. The JavaScript side pulls it right after begin to
+// cover the case where the sink fired before a JavaScript listener existed
+// (for example after a JavaScript reload while the native session kept
+// running). Queued on the main queue behind begin so it observes the new
+// session's snapshot.
+RCT_EXPORT_METHOD(getCrashReporterAttributes:(RCTPromiseResolveBlock)resolve
+									  reject:(RCTPromiseRejectBlock)reject) {
+	[self runOnMainQueue:^{
+		NSDictionary<NSString *, NSString *> *snapshot = SMBLastCrashReporterAttributesSnapshot();
+		resolve(snapshot ?: [NSNull null]);
 	}];
 }
 
@@ -528,10 +646,19 @@ RCT_EXPORT_METHOD(addNetworkEvent:(NSString *)url
 
 - (void)sessionStarted {
 	NSString *sessionUrl = [TestFairy sessionUrl];
+	NSString *correlationId = [TestFairy sessionCorrelationId];
 
 	[self sendSessionEvent:SMBSessionStartedEvent
 					  body:@{
-						  @"sessionUrl": sessionUrl.length > 0 ? sessionUrl : [NSNull null]
+						  @"sessionUrl": sessionUrl.length > 0 ? sessionUrl : [NSNull null],
+						  @"correlationId": correlationId.length > 0 ? correlationId : [NSNull null]
+					  }];
+}
+
+- (void)sessionCorrelationIdDidChange:(NSString *)correlationId {
+	[self sendSessionEvent:SMBSessionCorrelationIdChangedEvent
+					  body:@{
+						  @"correlationId": correlationId.length > 0 ? correlationId : [NSNull null]
 					  }];
 }
 

@@ -20,8 +20,10 @@ import com.facebook.react.uimanager.UIBlock;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import com.testfairy.FeedbackOptions;
+import com.testfairy.SauceMobileBetaInternals;
 import com.testfairy.SessionStateListener;
 import com.testfairy.TestFairy;
+import com.testfairy.internal.CrashReporterAttributeSink;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -55,11 +57,28 @@ public final class TestFairyModule extends ReactContextBaseJavaModule {
 	private static final String AUTO_UPDATE_DISMISSED_EVENT = "SauceMobileBetaAutoUpdateDismissed";
 	private static final String AUTO_UPDATE_DOWNLOAD_FAILED_EVENT = "SauceMobileBetaAutoUpdateDownloadFailed";
 	private static final String NO_AUTO_UPDATE_AVAILABLE_EVENT = "SauceMobileBetaNoAutoUpdateAvailable";
+	private static final String SESSION_CORRELATION_ID_CHANGED_EVENT =
+			"SauceMobileBetaSessionCorrelationIdChanged";
+
+	// Internal event carrying the SDK-managed crash-reporter attributes
+	// (sauce.correlation_id, sauce.mobile_beta.session_started, ...) from the
+	// native sink to the JavaScript layer, which applies them to Backtrace.
+	private static final String CRASH_REPORTER_ATTRIBUTES_EVENT =
+			"SauceMobileBetaCrashReporterAttributes";
 
 	// The native SDK has no removeSessionStateListener, so the listener is
 	// registered exactly once per process and forwards to whichever module
 	// instance is currently attached to a React context.
 	private static final AtomicBoolean SESSION_LISTENER_REGISTERED = new AtomicBoolean(false);
+
+	// The SDK holds a single crash-reporter attribute sink; it is registered
+	// once per process for the same reason and emits through the active module.
+	private static final AtomicBoolean CRASH_REPORTER_SINK_REGISTERED = new AtomicBoolean(false);
+
+	// Last snapshot handed to the sink, pulled by JavaScript right after begin
+	// to cover a sink call that fired before a JavaScript listener existed.
+	private static final AtomicReference<Map<String, String>> LAST_CRASH_REPORTER_ATTRIBUTES =
+			new AtomicReference<Map<String, String>>();
 
 	private static final AtomicReference<WeakReference<TestFairyModule>> ACTIVE_MODULE =
 			new AtomicReference<WeakReference<TestFairyModule>>();
@@ -87,6 +106,7 @@ public final class TestFairyModule extends ReactContextBaseJavaModule {
 		ACTIVE_MODULE.set(new WeakReference<TestFairyModule>(this));
 
 		registerSessionStateListenerOnce();
+		registerCrashReporterAttributeSinkOnce();
 	}
 
 	@Override
@@ -129,7 +149,16 @@ public final class TestFairyModule extends ReactContextBaseJavaModule {
 		TestFairy.addSessionStateListener(new SessionStateListener() {
 			@Override
 			public void onSessionStarted(String sessionUrl) {
-				emitFromActiveModule(SESSION_STARTED_EVENT, singletonMap("sessionUrl", sessionUrl));
+				Map<String, Object> payload = singletonMap("sessionUrl", sessionUrl);
+				payload.put("correlationId", TestFairy.getSessionCorrelationId());
+
+				emitFromActiveModule(SESSION_STARTED_EVENT, payload);
+			}
+
+			@Override
+			public void onSessionCorrelationIdChanged(String correlationId) {
+				emitFromActiveModule(
+						SESSION_CORRELATION_ID_CHANGED_EVENT, singletonMap("correlationId", correlationId));
 			}
 
 			@Override
@@ -176,6 +205,34 @@ public final class TestFairyModule extends ReactContextBaseJavaModule {
 			public void onNoAutoUpdateAvailable() {
 				emitFromActiveModule(
 						NO_AUTO_UPDATE_AVAILABLE_EVENT, Collections.<String, Object>emptyMap());
+			}
+		});
+	}
+
+	private static void registerCrashReporterAttributeSinkOnce() {
+		if (!CRASH_REPORTER_SINK_REGISTERED.compareAndSet(false, true)) {
+			return;
+		}
+
+		// Internal SDK entry point for this bridge: apps link Backtrace with
+		// TestFairy.setBacktraceClient. The JavaScript side applies the snapshot to
+		// @backtrace/react-native's client.
+		SauceMobileBetaInternals.setCrashReporterAttributeSink(new CrashReporterAttributeSink() {
+			@Override
+			public void setCrashReporterAttributes(Map<String, String> attributes) {
+				// Called synchronously on the thread that starts the session.
+				// Copy first: the SDK may reuse its own mutable map.
+				Map<String, String> snapshot =
+						attributes == null
+								? new HashMap<String, String>()
+								: new HashMap<String, String>(attributes);
+
+				LAST_CRASH_REPORTER_ATTRIBUTES.set(snapshot);
+
+				// Arguments.makeNativeMap converts nested java.util.Map values.
+				emitFromActiveModule(
+						CRASH_REPORTER_ATTRIBUTES_EVENT,
+						singletonMap("attributes", new HashMap<String, Object>(snapshot)));
 			}
 		});
 	}
@@ -365,6 +422,40 @@ public final class TestFairyModule extends ReactContextBaseJavaModule {
 			@Override
 			public void run() {
 				promise.resolve(TestFairy.getSessionUrl());
+			}
+		});
+	}
+
+	@ReactMethod
+	public void getSessionCorrelationId(final Promise promise) {
+		runOnUi(new Runnable() {
+			@Override
+			public void run() {
+				promise.resolve(TestFairy.getSessionCorrelationId());
+			}
+		});
+	}
+
+	/**
+	 * Internal: the last snapshot handed to the native sink, or null before the
+	 * first session start. JavaScript pulls it right after begin to cover a
+	 * sink call that fired before a JavaScript listener existed (for example
+	 * after a JavaScript reload while the native session kept running). Queued
+	 * on the UI thread behind begin so it observes the new session's snapshot.
+	 */
+	@ReactMethod
+	public void getCrashReporterAttributes(final Promise promise) {
+		runOnUi(new Runnable() {
+			@Override
+			public void run() {
+				Map<String, String> snapshot = LAST_CRASH_REPORTER_ATTRIBUTES.get();
+
+				if (snapshot == null) {
+					promise.resolve(null);
+					return;
+				}
+
+				promise.resolve(Arguments.makeNativeMap(new HashMap<String, Object>(snapshot)));
 			}
 		});
 	}

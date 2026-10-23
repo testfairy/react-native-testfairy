@@ -23,10 +23,26 @@ const SESSION_EVENTS = Object.freeze({
   autoUpdateDismissed: 'SauceMobileBetaAutoUpdateDismissed',
   autoUpdateDownloadFailed: 'SauceMobileBetaAutoUpdateDownloadFailed',
   noAutoUpdateAvailable: 'SauceMobileBetaNoAutoUpdateAvailable',
+  sessionCorrelationIdChanged: 'SauceMobileBetaSessionCorrelationIdChanged',
 });
+
+// Internal event: the native SDK hands the crash-reporter attributes it
+// manages (sauce.correlation_id, sauce.mobile_beta.session_started,
+// sauce.mobile_beta.session_url, sauce.sdk.coexistence_mode, sauce.release,
+// sauce.dist) to the bridge's native sink, which forwards them here. It is not
+// part of SESSION_EVENTS because the package applies the attributes to the
+// Backtrace client itself; applications never consume the raw event.
+const CRASH_REPORTER_ATTRIBUTES_EVENT = 'SauceMobileBetaCrashReporterAttributes';
 
 let nativeEventEmitter;
 let networkLoggingState;
+
+let explicitBacktraceClient = null;
+let backtraceNotInitializedWarned = false;
+let backtraceVersionWarned = false;
+let crashReporterAttributesSubscription;
+let lastCrashReporterAttributes = null;
+let crashReporterPushFailureLogged = false;
 
 function getNativeBridge() {
   const bridge = NativeModules[NATIVE_MODULE_NAME];
@@ -62,6 +78,185 @@ function normalizeBeginOptions(options) {
     // enforce this value independently.
     enableCrashReporter: false,
   };
+}
+
+function normalizeCrashReporterAttributes(attributes) {
+  if (!attributes || typeof attributes !== 'object') {
+    return null;
+  }
+
+  const normalized = {};
+
+  for (const [key, value] of Object.entries(attributes)) {
+    if (value != null) {
+      normalized[key] = String(value);
+    }
+  }
+
+  return normalized;
+}
+
+/**
+ * Resolves @backtrace/react-native, an optional peer dependency.
+ *
+ * Returns { present: false } when the module is not installed (or Metro could
+ * not resolve it), otherwise { present: true, client, version } where client is
+ * BacktraceClient.instance (undefined before BacktraceClient.initialize) and
+ * version is the installed package version when readable.
+ */
+function resolveBacktraceClient() {
+  try {
+    // Metro treats a require inside a try block as optional
+    // (transformer.allowOptionalDependencies, on by default in the React
+    // Native Metro config), so apps without Backtrace installed still bundle.
+    const backtrace = require('@backtrace/react-native');
+    const BacktraceClient = backtrace ? backtrace.BacktraceClient : undefined;
+    let version;
+
+    try {
+      version = require('@backtrace/react-native/package.json').version;
+    } catch (_error) {
+      version = undefined;
+    }
+
+    return {
+      present: true,
+      client: BacktraceClient ? BacktraceClient.instance : undefined,
+      version,
+    };
+  } catch (_error) {
+    return { present: false };
+  }
+}
+
+// Numeric major.minor.patch only: a pre-release such as 0.2.3-rc counts as 0.2.3.
+function isBacktraceVersionBefore(version, major, minor, patch) {
+  const match = /^(\d+)\.(\d+)\.(\d+)/.exec(String(version || ''));
+
+  if (!match) {
+    return false;
+  }
+
+  const [, a, b, c] = match.map(Number);
+
+  return a !== major ? a < major : b !== minor ? b < minor : c < patch;
+}
+
+function warnBacktraceNotInitializedOnce() {
+  if (backtraceNotInitializedWarned) {
+    return;
+  }
+
+  backtraceNotInitializedWarned = true;
+
+  console.warn(
+    'Sauce Mobile Beta found @backtrace/react-native but BacktraceClient.instance is not set, so crash reports will not carry the session attributes. Call BacktraceClient.initialize(...) before TestFairy.beginWithoutCrashHandler, or pass your client to TestFairy.setBacktraceClient(client).',
+  );
+}
+
+function warnBacktraceVersionOnce(version) {
+  if (backtraceVersionWarned || !isBacktraceVersionBefore(version, 0, 2, 3)) {
+    return;
+  }
+
+  backtraceVersionWarned = true;
+
+  console.warn(
+    `Sauce Mobile Beta: @backtrace/react-native ${version} does not forward attributes added after initialize() to native crash reports, so native crash reports will not carry sauce.correlation_id or sauce.mobile_beta.session_url. Upgrade to 0.2.3 or later.`,
+  );
+}
+
+function logCrashReporterPushFailureOnce(error) {
+  if (crashReporterPushFailureLogged) {
+    return;
+  }
+
+  crashReporterPushFailureLogged = true;
+
+  console.warn(
+    'Sauce Mobile Beta could not hand the crash-reporter attributes to Backtrace.',
+    error,
+  );
+}
+
+/**
+ * Applies the SDK-managed crash-reporter attributes to Backtrace.
+ *
+ * Priority: the client linked with setBacktraceClient, otherwise
+ * BacktraceClient.instance from @backtrace/react-native when that module
+ * resolves. Never throws: a crash reporter integration must not take the
+ * session down with it.
+ */
+function pushCrashReporterAttributes(attributes) {
+  const map = normalizeCrashReporterAttributes(attributes);
+
+  if (map == null) {
+    return;
+  }
+
+  lastCrashReporterAttributes = map;
+
+  try {
+    let client = explicitBacktraceClient;
+
+    if (!client) {
+      const resolved = resolveBacktraceClient();
+
+      if (resolved.present) {
+        if (!resolved.client) {
+          warnBacktraceNotInitializedOnce();
+        } else {
+          warnBacktraceVersionOnce(resolved.version);
+        }
+      }
+
+      client = resolved.client;
+    }
+
+    if (client && typeof client.addAttribute === 'function') {
+      client.addAttribute({ ...map });
+    }
+  } catch (error) {
+    logCrashReporterPushFailureOnce(error);
+  }
+}
+
+/**
+ * Subscribes to the native sink forwarding before a session can start, so
+ * the very first snapshot (pushed synchronously at session start) is not lost.
+ */
+function installCrashReporterAttributesSubscription() {
+  if (crashReporterAttributesSubscription) {
+    return;
+  }
+
+  crashReporterAttributesSubscription = getNativeEventEmitter().addListener(
+    CRASH_REPORTER_ATTRIBUTES_EVENT,
+    event => {
+      pushCrashReporterAttributes(event ? event.attributes : null);
+    },
+  );
+}
+
+/**
+ * Closes the startup race where the native sink fired before the JavaScript
+ * listener was attached (for example after a JavaScript reload while the
+ * native session kept running): pull the last native snapshot and re-apply it.
+ * The sink contract allows the same map to be received twice.
+ */
+function pullCrashReporterAttributes(bridge) {
+  if (typeof bridge.getCrashReporterAttributes !== 'function') {
+    return;
+  }
+
+  Promise.resolve()
+    .then(() => bridge.getCrashReporterAttributes())
+    .then(attributes => {
+      if (attributes) {
+        pushCrashReporterAttributes(attributes);
+      }
+    })
+    .catch(logCrashReporterPushFailureOnce);
 }
 
 function serializeLogValue(value) {
@@ -242,10 +437,63 @@ class TestFairy {
       throw new TypeError('appToken must be a non-empty string.');
     }
 
-    getNativeBridge().beginWithoutCrashHandler(
-      appToken,
-      normalizeBeginOptions(options),
-    );
+    const bridge = getNativeBridge();
+
+    // Subscribe before the native begin: the native sink pushes the first
+    // snapshot synchronously while the session starts.
+    installCrashReporterAttributesSubscription();
+
+    bridge.beginWithoutCrashHandler(appToken, normalizeBeginOptions(options));
+
+    pullCrashReporterAttributes(bridge);
+  }
+
+  /**
+   * Returns the correlation id of the current Sauce Mobile Beta session, or
+   * null before the first session start. The SDK generates a new lowercase
+   * UUID v4 at every session start and attaches it to the session as
+   * sauce.correlation_id; the same value is written to Backtrace.
+   */
+  static getSessionCorrelationId() {
+    return getNativeBridge().getSessionCorrelationId();
+  }
+
+  /**
+   * Links a Backtrace client explicitly. Backtrace is linked automatically:
+   * the package writes the SDK-managed attributes (sauce.correlation_id,
+   * sauce.mobile_beta.session_started, sauce.mobile_beta.session_url,
+   * sauce.sdk.coexistence_mode, sauce.release, sauce.dist) to
+   * require('@backtrace/react-native').BacktraceClient.instance at every
+   * session start and on every start response. Call this only when the client
+   * is wrapped behind your own module or the package manager does not let this
+   * package resolve @backtrace/react-native (strict pnpm or Yarn PnP layouts).
+   * The client needs addAttribute(map).
+   *
+   * Pass null to restore the automatic link. Either way the current snapshot
+   * is replayed to the client that is now current, and the hand-off is armed
+   * so a session started natively, or a Backtrace client initialized after
+   * begin, still receives it.
+   */
+  static setBacktraceClient(client) {
+    if (client != null && typeof client.addAttribute !== 'function') {
+      throw new TypeError(
+        'setBacktraceClient expects a Backtrace client (an object with addAttribute) or null.',
+      );
+    }
+
+    explicitBacktraceClient = client || null;
+
+    if (lastCrashReporterAttributes) {
+      pushCrashReporterAttributes(lastCrashReporterAttributes);
+    }
+
+    try {
+      const bridge = getNativeBridge();
+      installCrashReporterAttributesSubscription();
+      pullCrashReporterAttributes(bridge);
+    } catch (error) {
+      logCrashReporterPushFailureOnce(error);
+    }
   }
 
   static installFeedbackHandler(appToken) {
@@ -540,6 +788,10 @@ class TestFairy {
     register(
       SESSION_EVENTS.noAutoUpdateAvailable,
       listener.onNoAutoUpdateAvailable,
+    );
+    register(
+      SESSION_EVENTS.sessionCorrelationIdChanged,
+      listener.onSessionCorrelationIdChanged,
     );
 
     return {
