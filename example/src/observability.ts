@@ -1,5 +1,3 @@
-import 'react-native-get-random-values';
-
 import {
   BacktraceClient,
   type BacktraceConfiguration,
@@ -7,14 +5,10 @@ import {
 
 import TestFairy from '@saucelabs/mobile-beta-react-native';
 
-import { v4 as uuidv4 } from 'uuid';
-
 export interface ObservabilityConfiguration {
   backtraceSubmissionUrl: string;
   sauceMobileBetaToken: string;
   environment: string;
-  release: string;
-  dist: string;
   /** Mobile App Distribution id; reported as mad.distribution_id only when set. */
   distributionId?: string;
   userId?: string;
@@ -22,28 +16,30 @@ export interface ObservabilityConfiguration {
 
 export interface ObservabilityRuntime {
   backtrace: BacktraceClient;
-  correlationId: string;
   dispose(): void;
 }
 
 /**
  * Initializes Backtrace as the sole crash owner, then Sauce Mobile Beta as the
- * crashless beta/feedback/session SDK, with shared correlation attributes so
- * a crash report in Backtrace can be matched to a Sauce Mobile Beta session.
+ * crashless beta/feedback/session SDK.
+ *
+ * The SDK owns the coexistence contract: it generates a new
+ * sauce.correlation_id at every session start, attaches it to the session, and
+ * hands it (with sauce.mobile_beta.session_started, sauce.mobile_beta.session_url,
+ * sauce.sdk.coexistence_mode, sauce.release and sauce.dist) to the handler
+ * below, which applies the map to Backtrace. The app only sets its own
+ * attributes.
  */
 export function initializeObservability(
   configuration: ObservabilityConfiguration,
 ): ObservabilityRuntime {
-  const correlationId = uuidv4();
-
-  const sharedAttributes: Record<string, string> = {
-    'sauce.correlation_id': correlationId,
-    'sauce.sdk.coexistence_mode': 'backtrace_crash_owner',
+  // App-owned attributes, shared by both systems. Everything else that links a
+  // crash to a session is managed by the SDK; do not set sauce.correlation_id,
+  // sauce.mobile_beta.session_started or sauce.mobile_beta.session_url here.
+  const appAttributes: Record<string, string> = {
     'sauce.environment': configuration.environment,
-    'sauce.release': configuration.release,
-    'sauce.dist': configuration.dist,
     ...(configuration.distributionId
-      ? { 'mad.distribution_id': configuration.distributionId }
+      ? {'mad.distribution_id': configuration.distributionId}
       : {}),
   };
 
@@ -51,10 +47,8 @@ export function initializeObservability(
     url: configuration.backtraceSubmissionUrl,
 
     userAttributes: {
-      ...sharedAttributes,
-      ...(configuration.userId
-        ? { 'sauce.user_id': configuration.userId }
-        : {}),
+      ...appAttributes,
+      ...(configuration.userId ? {'sauce.user_id': configuration.userId} : {}),
     },
 
     database: {
@@ -65,37 +59,24 @@ export function initializeObservability(
     },
   };
 
+  // Step 1: Backtrace first. It is the crash owner.
   const backtrace = BacktraceClient.initialize(backtraceConfiguration);
 
-  // Subscribe before beginWithoutCrashHandler: the session URL arrives
-  // asynchronously once the session is accepted by the server.
-  const sessionSubscription = TestFairy.addSessionStateListener({
-    onSessionStarted({ sessionUrl }) {
-      // Overwritten on every session start: one launch can produce several sessions (stop()/resume), each with its own URL.
-      // String values keep the attribute type identical across iOS, Android and React Native.
-      backtrace.addAttribute({
-        'sauce.mobile_beta.session_started': 'true',
-        'sauce.mobile_beta.session_url': sessionUrl ?? '',
-      });
-    },
+  // Step 2: nothing to wire. At every session start (and on every start
+  // response) the package writes the SDK-managed attributes to
+  // BacktraceClient.instance through addAttribute, which overwrites. An app that
+  // wraps the client behind its own module would call
+  // TestFairy.setBacktraceClient(backtrace) here instead.
 
-    onSessionFailed() {
-      backtrace.addAttribute({
-        'sauce.mobile_beta.session_started': 'false',
-      });
-    },
-  });
-
-  // Identity and attributes are set before session initialization;
-  // the native SDK retains them and attaches them to every Sauce Mobile Beta session.
-  // The correlation id travels as the `sauce.correlation_id` attribute below.
-  // `setCorrelationId`/`identify` are deprecated and write the user-identity field and are not used for it.
-
+  // Identity and app attributes are set before session initialization; the
+  // native SDK retains them and attaches them to every Sauce Mobile Beta session.
+  // setCorrelationId/identify are deprecated (they write the user-identity
+  // field) and are not used for correlation.
   if (configuration.userId) {
     TestFairy.setUserId(configuration.userId);
   }
 
-  for (const [key, value] of Object.entries(sharedAttributes)) {
+  for (const [key, value] of Object.entries(appAttributes)) {
     TestFairy.setAttribute(key, value);
   }
 
@@ -103,17 +84,14 @@ export function initializeObservability(
     enableCrashReporter: false,
   });
 
-  TestFairy.log({
-    message: 'Sauce Mobile Beta initialized with Backtrace crash ownership.',
-    correlationId,
-  });
+  TestFairy.log(
+    'Sauce Mobile Beta initialized with Backtrace crash ownership.',
+  );
 
   return {
     backtrace,
-    correlationId,
 
     dispose() {
-      sessionSubscription.remove();
       TestFairy.stop();
       backtrace.dispose();
     },

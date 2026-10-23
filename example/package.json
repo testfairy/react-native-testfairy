@@ -10,13 +10,11 @@
     "test": "jest"
   },
   "dependencies": {
-    "@backtrace/react-native": "^0.2.2",
+    "@backtrace/react-native": "^0.2.3-rc",
     "@saucelabs/mobile-beta-react-native": "file:../",
     "react": "18.2.0",
     "react-native": "0.72.17",
-    "react-native-get-random-values": "^1.11.0",
-    "util": "^0.12.5",
-    "uuid": "^9.0.1"
+    "util": "^0.12.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
@@ -27,7 +25,6 @@
     "@tsconfig/react-native": "^3.0.0",
     "@types/react": "^18.0.24",
     "@types/react-test-renderer": "^18.0.0",
-    "@types/uuid": "^9.0.8",
     "babel-jest": "^29.2.1",
     "eslint": "^8.19.0",
     "jest": "^29.2.1",
