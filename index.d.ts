@@ -130,12 +130,17 @@ declare class TestFairy {
   /**
    * Starts a crashless Sauce Mobile Beta session.
    *
-   * Backtrace remains the sole crash owner.
+   * Backtrace remains the sole crash owner. Call `setServerEndpoint` with the
+   * Server Endpoint from Organization Settings > SDK Settings first: the native
+   * SDKs' built-in default server is no longer in service.
    */
   static begin(appToken: string, options?: BeginOptions): void;
 
   /**
-   * Recommended explicit Backtrace coexistence entry point.
+   * Recommended explicit Backtrace coexistence entry point. Call
+   * `setServerEndpoint` with the Server Endpoint from Organization Settings >
+   * SDK Settings first: the native SDKs' built-in default server is no longer
+   * in service.
    */
   static beginWithoutCrashHandler(
     appToken: string,
@@ -173,6 +178,13 @@ declare class TestFairy {
   static hideView(viewOrNativeId: number | string | object): void;
 
   static hideWebViewElements(selector: string): void;
+  /**
+   * Sets the server the SDK sends session data to. Required: pass the Server Endpoint shown in
+   * your Mobile App Distribution dashboard under Organization Settings, SDK Settings
+   * (`https://<host>/services/`). The native SDKs' built-in default server is no longer in
+   * service, so an app that skips this call starts no sessions. Call it before
+   * `beginWithoutCrashHandler`.
+   */
   static setServerEndpoint(url: string): void;
   static log(message: unknown): void;
   static setScreenName(name: string): void;

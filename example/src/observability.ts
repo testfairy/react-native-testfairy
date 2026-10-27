@@ -8,6 +8,8 @@ import TestFairy from '@saucelabs/mobile-beta-react-native';
 export interface ObservabilityConfiguration {
   backtraceSubmissionUrl: string;
   sauceMobileBetaToken: string;
+  /** Server Endpoint from Organization Settings, SDK Settings (https://<host>/services/). Required. */
+  sauceMobileBetaEndpoint: string;
   environment: string;
   /** Mobile App Distribution id; reported as mad.distribution_id only when set. */
   distributionId?: string;
@@ -79,6 +81,9 @@ export function initializeObservability(
   for (const [key, value] of Object.entries(appAttributes)) {
     TestFairy.setAttribute(key, value);
   }
+
+  // Required: the SDK's built-in default server is no longer in service.
+  TestFairy.setServerEndpoint(configuration.sauceMobileBetaEndpoint);
 
   TestFairy.beginWithoutCrashHandler(configuration.sauceMobileBetaToken, {
     enableCrashReporter: false,

@@ -155,6 +155,17 @@ describe('Sauce Mobile Beta React Native', () => {
     }).toThrow('appToken must be a non-empty string');
   });
 
+  test('setServerEndpoint forwards the URL and rejects an empty value', () => {
+    TestFairy.setServerEndpoint('https://example.test/services/');
+    expect(mockNativeBridge.setServerEndpoint).toHaveBeenCalledWith(
+      'https://example.test/services/',
+    );
+    expect(() => TestFairy.setServerEndpoint('')).toThrow(
+      'url must be a non-empty string',
+    );
+    expect(() => TestFairy.setServerEndpoint(undefined)).toThrow(TypeError);
+  });
+
   test('reports that crash reporting is unavailable', () => {
     expect(TestFairy.isCrashReportingAvailable()).toBe(false);
 

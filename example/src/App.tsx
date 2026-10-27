@@ -20,6 +20,7 @@ export default function App() {
       backtraceSubmissionUrl:
         'https://submit.backtrace.io/<universe>/<backtrace-token>/json',
       sauceMobileBetaToken: '<sauce-mobile-beta-token>',
+      sauceMobileBetaEndpoint: '<server-endpoint>',
       environment: 'beta',
       distributionId: 'mad-build-abc123',
       userId: 'user-123',

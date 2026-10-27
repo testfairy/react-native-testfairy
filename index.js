@@ -422,7 +422,10 @@ class TestFairy {
    * Starts a Sauce Mobile Beta session.
    *
    * In this package, begin is crashless and delegates to
-   * beginWithoutCrashHandler. Backtrace remains the sole crash owner.
+   * beginWithoutCrashHandler. Backtrace remains the sole crash owner. Call
+   * setServerEndpoint with the Server Endpoint from Organization Settings >
+   * SDK Settings first: the native SDKs' built-in default server is no longer
+   * in service.
    */
   static begin(appToken, options = {}) {
     return TestFairy.beginWithoutCrashHandler(appToken, options);
@@ -430,7 +433,10 @@ class TestFairy {
 
   /**
    * Starts a Sauce Mobile Beta session without installing TestFairy crash
-   * handling. This is the recommended Backtrace coexistence API.
+   * handling. This is the recommended Backtrace coexistence API. Call
+   * setServerEndpoint with the Server Endpoint from Organization Settings >
+   * SDK Settings first: the native SDKs' built-in default server is no longer
+   * in service.
    */
   static beginWithoutCrashHandler(appToken, options = {}) {
     if (typeof appToken !== 'string' || appToken.trim().length === 0) {
@@ -552,8 +558,19 @@ class TestFairy {
     getNativeBridge().hideWebViewElements(String(selector));
   }
 
+  /**
+   * Sets the server the SDK sends session data to: the Server Endpoint from
+   * Organization Settings > SDK Settings (https://<host>/services/). Required
+   * before begin: the native SDKs' built-in default server is no longer in
+   * service.
+   */
   static setServerEndpoint(url) {
-    getNativeBridge().setServerEndpoint(String(url));
+    if (typeof url !== 'string' || url.trim().length === 0) {
+      throw new TypeError(
+        'url must be a non-empty string: the Server Endpoint from Organization Settings > SDK Settings.',
+      );
+    }
+    getNativeBridge().setServerEndpoint(url);
   }
 
   static log(message) {

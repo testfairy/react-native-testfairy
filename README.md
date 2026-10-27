@@ -47,8 +47,11 @@ dependencyResolutionManagement {
 ```js
 import TestFairy from '@saucelabs/mobile-beta-react-native';
 
+TestFairy.setServerEndpoint('<server-endpoint>');
 TestFairy.beginWithoutCrashHandler('<sauce-mobile-beta-token>');
 ```
+
+Both values come from your Mobile App Distribution dashboard, Organization Settings, SDK Settings. The native SDKs' built-in default server is no longer in service, so `setServerEndpoint` is required before `beginWithoutCrashHandler`; an app that skips it starts no sessions.
 
 `begin(...)` is also crashless in this package, but
 `beginWithoutCrashHandler(...)` is recommended because it makes Backtrace crash ownership explicit.
@@ -62,6 +65,7 @@ import { BacktraceClient } from '@backtrace/react-native';
 import TestFairy from '@saucelabs/mobile-beta-react-native';
 
 BacktraceClient.initialize(backtraceConfiguration);
+TestFairy.setServerEndpoint('<server-endpoint>');
 TestFairy.beginWithoutCrashHandler('<sauce-mobile-beta-token>');
 ```
 

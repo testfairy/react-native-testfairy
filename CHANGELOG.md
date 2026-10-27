@@ -4,6 +4,8 @@
 
 First general availability release.
 
+Required: the native SDKs' built-in default server is no longer in service, for every package version. Call `TestFairy.setServerEndpoint('<server-endpoint>')` with the Server Endpoint from your Mobile App Distribution dashboard (Organization Settings, SDK Settings) before `beginWithoutCrashHandler(...)`. An app that skips this call starts no sessions.
+
 The SDK now owns the whole Backtrace coexistence contract: a new `sauce.correlation_id` is generated at every session start (one launch can contain several sessions: stop/resume, background, session length reached, update prompt), attached to that session, and handed to Backtrace together with the other managed attributes. Apps no longer generate a UUID or mirror the session URL. Native SDK pins: iOS 2.3.0, Android 2.3.0 (`sauceMobileBetaNative`; the vendored `local-native/` binaries are re-vendored from the published 2.3.0 bytes before tagging, and `scripts/validate-package.sh` now fails when they do not match the pins).
 
 - New `getSessionCorrelationId(): Promise<string | null>` (null before the first session start).

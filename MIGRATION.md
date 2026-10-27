@@ -29,15 +29,18 @@ rm -rf android/.gradle android/build android/app/build
 +import TestFairy from '@saucelabs/mobile-beta-react-native';
 ```
 
-The runtime API remains `TestFairy` — no other source changes are required.
+The runtime API remains `TestFairy`. The only other source change is the required `setServerEndpoint` call in step 3.
 
 ## 3. Update initialization
 
 ```diff
 -TestFairy.disableCrashHandler();
 -TestFairy.begin(token);
++TestFairy.setServerEndpoint('<server-endpoint>');
 +TestFairy.beginWithoutCrashHandler(token);
 ```
+
+Both values are in Organization Settings > SDK Settings on your Mobile App Distribution dashboard: the SDK App Token and the Server Endpoint (`https://<host>/services/`). The native SDKs' built-in default server is no longer in service, so `setServerEndpoint` is required before the start call; an app that skips it starts no sessions.
 
 `begin(...)` is also crashless in this package, but the explicit API is recommended for Backtrace coexistence.
 `enableCrashHandler()` / `disableCrashHandler()` remain callable and are native no-ops.

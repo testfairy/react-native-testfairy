@@ -20,7 +20,7 @@ Sauce Mobile Beta is crashless.
 
 ## Initialization order
 
-Two steps: initialize Backtrace, then start Sauce Mobile Beta. The SDK owns the coexistence attributes and writes them to Backtrace itself.
+Three steps: initialize Backtrace, set the Sauce Mobile Beta server endpoint, then start Sauce Mobile Beta. The SDK owns the coexistence attributes and writes them to Backtrace itself.
 
 ```ts
 import { BacktraceClient } from '@backtrace/react-native';
@@ -33,7 +33,10 @@ BacktraceClient.initialize({
   database: { enable: true, captureNativeCrashes: true, createDatabaseDirectory: true, path: `${BacktraceClient.applicationDataPath}/backtrace` },
 });
 
-// 2. Start the session. The package links BacktraceClient.instance on its own.
+// 2. Server endpoint from Organization Settings, SDK Settings (the built-in default server is no longer in service).
+TestFairy.setServerEndpoint(sauceMobileBetaEndpoint);
+
+// 3. Start the session. The package links BacktraceClient.instance on its own.
 TestFairy.beginWithoutCrashHandler(sauceMobileBetaToken);
 ```
 
