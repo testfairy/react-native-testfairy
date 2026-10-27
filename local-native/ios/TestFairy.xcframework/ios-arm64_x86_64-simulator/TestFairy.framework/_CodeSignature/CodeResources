@@ -6,15 +6,19 @@
 	<dict>
 		<key>Headers/TestFairy.h</key>
 		<data>
-		hasXK7W0AGAR2gY2W/BcY745W9I=
+		QR9NLzI3nTxhcxR2ooqiWPsXwuM=
+		</data>
+		<key>Headers/TestFairySPI.h</key>
+		<data>
+		OiTeng5Vw49ZBRvQYaN+sHFjECg=
 		</data>
 		<key>Info.plist</key>
 		<data>
-		3o3LVxQdPjg2qoh4dL4feb1YpPo=
+		GxEU7KkRwZvknSIbfGn2zhQNKAA=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
-		zOH01PTrE0QqnN6GjWQkNsHRxdM=
+		PbEmVI0cinBmJw1TCY82YZAYMQI=
 		</data>
 		<key>strip-architectures.sh</key>
 		<data>
@@ -31,14 +35,21 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			dh9sAxRvMS0x4ShxPxCyj0oywwNSwXSL7TDHEUx2MEk=
+			KnWVLaWPNZVZIistx1kT2r9XxgPGtRbBJZT+0KDq9Ow=
+			</data>
+		</dict>
+		<key>Headers/TestFairySPI.h</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			Vo0c8DSzDPngLbsY5Gs4OTLBeEdCLPEyNjnR8AVEL+o=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			dftVe9li2NJHvb7BLZY855OVY6yAG9jydlBf2p8MM5w=
+			isREBY5c6caTTnD3g/rFEf4zCDUAojl8eZHpmqEVNf4=
 			</data>
 		</dict>
 		<key>strip-architectures.sh</key>

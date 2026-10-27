@@ -1,6 +1,11 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+// This header predates nullability annotations. Only the newest API is annotated, so
+// the completeness warning is silenced for consumers that include it with -Wall.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullability-completeness"
+
 #define TF_DEPRECATED(x)  __attribute__ ((deprecated(x)))
 
 @protocol TestFairySessionStateDelegate <NSObject>
@@ -54,6 +59,15 @@
  * that sessionFailed() could still be called.
  */
 - (void)noAutoUpdateAvailable;
+
+/**
+ * Callback when the SDK generated a new per-session correlation id. This happens at
+ * every session start: begin, resume after stop, foreground after a background stop,
+ * dismissed update prompt and redirect. The id is already attached to the session as
+ * the sauce.correlation_id attribute and written to the linked Backtrace client.
+ * See sessionCorrelationId.
+ */
+- (void)sessionCorrelationIdDidChange:(NSString * _Nonnull)correlationId;
 @end
 
 @interface TestFairyFeedbackContent: NSObject
@@ -285,10 +299,12 @@ typedef TestFairyFeedbackContent * (^TestFairyFeedbackInterceptor)(TestFairyFeed
  */
 + (void)uninstallFeedbackHandler;
 /**
- * Change the server endpoint for use with on-premise hosting. Please
- * contact support or sales for more information. Must be called before begin
+ * Sets the server the SDK sends session data to. Required: pass the Server Endpoint shown in your
+ * Mobile App Distribution dashboard under Organization Settings > SDK Settings (https://<host>/services/).
+ * The value differs per region and private instance, and the SDK's built-in default server is no longer in service,
+ * an app that skips this call starts no sessions. Must be called before beginWithoutCrashHandler: (or begin:).
  *
- * @param serverOverride server address for use with TestFairy
+ * @param serverOverride server endpoint URL
  */
 + (void)setServerEndpoint:(NSString *)serverOverride;
 
@@ -478,6 +494,16 @@ typedef TestFairyFeedbackContent * (^TestFairyFeedbackInterceptor)(TestFairyFeed
 + (NSString *)sessionUrl;
 
 /**
+ * Returns the correlation id of the current session. The SDK generates a new lowercase
+ * UUID v4 at every session start and attaches it to the session as the
+ * sauce.correlation_id attribute, so the same value identifies the session in a crash
+ * report. Will return nil before the first session start.
+ *
+ * @return per-session correlation id
+ */
++ (NSString * _Nullable)sessionCorrelationId;
+
+/**
  * Takes a screenshot and sends it to TestFairy
  */
 + (void)takeScreenshot;
@@ -521,6 +547,9 @@ typedef TestFairyFeedbackContent * (^TestFairyFeedbackInterceptor)(TestFairyFeed
  * @return YES if successfully set attribute value, NO if failed with error in log.
  *
  * @note The SDK limits you to storing 64 named attributes. Adding more than 64 will fail and return NO.
+ * @note The keys sauce.correlation_id, sauce.mobile_beta.session_started and
+ *       sauce.mobile_beta.session_url are managed by the SDK. Setting them is ignored
+ *       with a warning and returns YES.
  */
 + (BOOL)setAttribute:(NSString *)key withValue:(NSString *)value;
 
@@ -724,6 +753,24 @@ typedef TestFairyFeedbackContent * (^TestFairyFeedbackInterceptor)(TestFairyFeed
 + (void)setSessionStateDelegate:(id<TestFairySessionStateDelegate>)delegate;
 
 /**
+ * Links Backtrace Error Reporting to the Sauce Mobile Beta session.
+ *
+ * Backtrace is linked automatically: at every session start the SDK resolves
+ * BacktraceClient.shared and merges the attributes it manages into the client's
+ * attributes, so the next crash report points at exactly one session. The managed
+ * attributes are sauce.correlation_id, sauce.mobile_beta.session_started,
+ * sauce.mobile_beta.session_url, sauce.sdk.coexistence_mode, sauce.release and
+ * sauce.dist.
+ *
+ * Call this method only when the app keeps a private BacktraceClient instead of
+ * assigning BacktraceClient.shared. Pass nil to restore the automatic discovery.
+ *
+ * @param client A BacktraceClient (backtrace-cocoa). Calling this after begin applies
+ *               the current session's attributes at once.
+ */
++ (void)setBacktraceClient:(id _Nullable)client;
+
+/**
  * Log network calls to TestFairy.
  */
 + (void)addNetwork:(NSURLSessionTask *)task error:(NSError *)error;
@@ -810,3 +857,5 @@ extern NSString *const TestFairyDidShakeDevice;
 extern NSString *const TestFairyWillProvideFeedback;
 extern NSString *const TestFairyDidCancelFeedback;
 extern NSString *const TestFairyDidSendFeedback;
+
+#pragma clang diagnostic pop

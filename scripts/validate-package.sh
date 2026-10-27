@@ -101,22 +101,32 @@ while IFS= read -r binary; do
     continue
   fi
   MACHO_COUNT=$((MACHO_COUNT + 1))
-  if nm "${binary}" 2>/dev/null | grep -Eq "${IOS_FORBIDDEN}"; then
+  # Capture the tool output once instead of piping into grep -q: with
+  # pipefail, grep -q exiting at the first match kills nm/strings with SIGPIPE
+  # and the pipeline reports failure, which hides a match (fat binaries hit it).
+  SYMBOLS="$(nm "${binary}" 2>/dev/null || true)"
+  STRINGS="$(strings "${binary}" 2>/dev/null || true)"
+  if grep -Eq "${IOS_FORBIDDEN}" <<< "${SYMBOLS}"; then
     fail "crash-reporter symbols found in ${binary}"
   fi
-  if strings "${binary}" 2>/dev/null | grep -Eq "${IOS_FORBIDDEN}"; then
+  if grep -Eq "${IOS_FORBIDDEN}" <<< "${STRINGS}"; then
     fail "crash-reporter strings found in ${binary}"
+  fi
+  # The stamp checks apply to the framework executable only: the dSYM DWARF
+  # files carry no string constants, so they never contain the version.
+  if [[ "${binary}" == *".dSYM/"* ]]; then
+    continue
   fi
   # A binary built without stamping the release version reports the literal
   # placeholders from TestFairyConstants.h via getVersion()/the agent version.
-  if strings "${binary}" 2>/dev/null | grep -qx 'SDK_VERSION'; then
+  if grep -qx 'SDK_VERSION' <<< "${STRINGS}"; then
     fail "unstamped SDK_VERSION placeholder in ${binary}"
   fi
-  if strings "${binary}" 2>/dev/null | grep -qx 'GIT_REVISION'; then
+  if grep -qx 'GIT_REVISION' <<< "${STRINGS}"; then
     fail "unstamped GIT_REVISION placeholder in ${binary}"
   fi
   # kSDKVersion is stamped verbatim, so the exact pin shows up as a line.
-  if ! strings "${binary}" 2>/dev/null | grep -qx "${IOS_PIN}"; then
+  if ! grep -qx "${IOS_PIN}" <<< "${STRINGS}"; then
     fail "vendored iOS binary ${binary} is not stamped ${IOS_PIN} (sauceMobileBetaNative.ios)"
   fi
 done < <(find "${XCFRAMEWORK}" -type f)

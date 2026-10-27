@@ -1,6 +1,13 @@
 framework module TestFairy {
   umbrella header "TestFairy.h"
-  export *
 
+  export *
   module * { export * }
+
+  // Internal entry points for the Sauce Mobile Beta React Native bridge. Not part of
+  // `import TestFairy`: Objective-C reaches it with #import <TestFairy/TestFairySPI.h>.
+  explicit module SPI {
+    header "TestFairySPI.h"
+    export *
+  }
 }

@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.saucelabs.mobilebeta</groupId>
   <artifactId>sauce-mobile-beta-android</artifactId>
-  <version>2.2.0-rc</version>
+  <version>2.3.0</version>
   <packaging>aar</packaging>
   <name>Sauce Mobile Beta SDK for Android</name>
   <description>Crashless beta testing, session, feedback, and logging SDK for Android. Designed to coexist with Backtrace Error Reporting as the sole crash owner while preserving TestFairy-compatible source APIs.</description>
