@@ -25,7 +25,7 @@ iOS:
 cd ios && pod install
 ```
 
-Android: add the Sauce Mobile Beta Maven repository if the native artifact is not on Maven Central:
+Android: a standard project needs no Gradle change, the package registers its Maven repository itself. Only if `settings.gradle` restricts repositories with `RepositoriesMode.FAIL_ON_PROJECT_REPOS`, add it there:
 
 ```kotlin
 // settings.gradle(.kts)
@@ -51,7 +51,7 @@ TestFairy.setServerEndpoint('<server-endpoint>');
 TestFairy.beginWithoutCrashHandler('<sauce-mobile-beta-token>');
 ```
 
-Both values come from your Mobile App Distribution dashboard, Organization Settings, SDK Settings. The native SDKs' built-in default server is no longer in service, so `setServerEndpoint` is required before `beginWithoutCrashHandler`; an app that skips it starts no sessions.
+Both values come from your Mobile App Distribution dashboard, Organization Settings, SDK Settings. The native SDKs' built-in default server is no longer in service, so `setServerEndpoint` is required before `beginWithoutCrashHandler`, an app that skips it starts no sessions.
 
 `begin(...)` is also crashless in this package, but
 `beginWithoutCrashHandler(...)` is recommended because it makes Backtrace crash ownership explicit.
@@ -69,7 +69,7 @@ TestFairy.setServerEndpoint('<server-endpoint>');
 TestFairy.beginWithoutCrashHandler('<sauce-mobile-beta-token>');
 ```
 
-No glue code is needed. `TestFairy.setBacktraceClient(client)` links a client explicitly when it is wrapped behind your own module or your Metro configuration does not resolve optional dependencies (`null` restores the automatic link). Do not set `sauce.correlation_id` yourself: one launch can contain several sessions and each gets its own id.
+No extra code is needed. `TestFairy.setBacktraceClient(client)` links a client explicitly when it is wrapped behind your own module or your Metro configuration does not resolve optional dependencies (`null` restores the automatic link). Do not set `sauce.correlation_id` yourself: one launch can contain several sessions and each gets its own id.
 See [docs/backtrace-coexistence.md](docs/backtrace-coexistence.md) for the full guide and [example/src/observability.ts](example/src/observability.ts) for a working setup.
 
 ## Session state
@@ -107,24 +107,16 @@ Because of that, `react-native-testfairy` and `@saucelabs/mobile-beta-react-nati
 
 ## Local development
 
-The native SDK binaries are vendored under `local-native/` (tracked, and shipped in the npm tarball) — see `local-native/README.md` for the provenance table, the re-vendoring commands and the Podfile/Gradle wiring.
+The native SDK binaries are vendored under `local-native/` (tracked, and shipped in the npm tarball) — see `local-native/README.md`.
 
-## Installing from a GitHub Release
+## Installing without the npm registry
 
-Releases carry the npm tarball as a GitHub Release
-asset, so no registry access is needed:
+Every release also attaches the tarball that was published to npm as a GitHub Release asset, for installs without registry access:
 
 ```bash
 npm install https://github.com/testfairy/react-native-testfairy/releases/download/3.1.0/saucelabs-mobile-beta-react-native-3.1.0.tgz
 cd ios && pod install
 ```
 
-The package installs into `node_modules/@saucelabs/mobile-beta-react-native`
-and autolinks exactly like a registry install. (Installing from the git tag —
-`npm install github:testfairy/react-native-testfairy#3.1.0` — also works,
-but pulls the whole repository instead of the validated tarball.)
+The package installs into `node_modules/@saucelabs/mobile-beta-react-native` and autolinks on both platforms. (Installing from the git tag — `npm install github:testfairy/react-native-testfairy#3.1.0` — also works, but pulls the whole repository instead of the validated tarball.)
 
-## Repository location
-
-This package is published from `https://github.com/testfairy/react-native-testfairy`. 
-A Sauce-owned home, `saucelabs/mobile-beta-react-native`, becomes canonical once it exists publicly and package metadata will move with it.

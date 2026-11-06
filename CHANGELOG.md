@@ -1,5 +1,12 @@
 # Changelog
 
+## future : 3.1.1
+
+Documentation-only release: no code, API or native pin changes (native SDKs 2.3.0).
+
+- README (rendered on the npm page), `docs/backtrace-coexistence.md`: `@backtrace/react-native`.
+- Update Release workflow.
+
 ## 3.1.0
 
 First general availability release.

@@ -30,8 +30,7 @@ jobs:
 
       - run: npm ci
 
-      # prepack runs lint, tests, typecheck and the crashless package validator
-      # against the canonical identity (@saucelabs/mobile-beta-react-native).
+      # prepack runs lint, tests, typecheck and the crashless package validator against (@saucelabs/mobile-beta-react-native).
       - name: Gate (pack)
         run: npm pack --dry-run
 
@@ -41,15 +40,6 @@ jobs:
       - name: Pack for release
         run: npm pack --ignore-scripts
 
-      # npm registry publishing is a switch — repository variable NPM_PUBLISH_MODE:
-      #   (unset)  skip the registry; GitHub Release tarball only
-      #   token    publish with the NPM_TOKEN secret (granular token whose account
-      #            may publish the chosen name)
-      #   oidc     publish via npm Trusted Publishing (repo+workflow configured
-      #            as the package's trusted publisher on npmjs.com)
-      # Optional NPM_PUBLISH_NAME variable publishes under another name (e.g.
-      # @testfairy/mobile-beta-react-native or react-native-testfairy) while the
-      # repo keeps its canonical identity — only the published manifest changes.
       - name: Publish to npm
         if: vars.NPM_PUBLISH_MODE == 'token' || vars.NPM_PUBLISH_MODE == 'oidc'
         run: |
@@ -83,9 +73,12 @@ jobs:
           prerelease: ${{ contains(github.ref_name, '-') }}
           files: "*.tgz"
           body: |
-            Install without the npm registry:
+            Install from the npm registry:
+
+                npm install @saucelabs/mobile-beta-react-native@${{ github.ref_name }}
+
+            The same tarball is attached below for installs without registry access:
 
                 npm install https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/saucelabs-mobile-beta-react-native-${{ github.ref_name }}.tgz
 
-            Then `cd ios && pod install` (iOS) — React Native autolinking picks the
-            package up from node_modules like any registry install.
+            Then `cd ios && pod install` (iOS), React Native autolinking picks the package up from node_modules.

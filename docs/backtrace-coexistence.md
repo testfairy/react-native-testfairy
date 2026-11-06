@@ -42,7 +42,7 @@ TestFairy.beginWithoutCrashHandler(sauceMobileBetaToken);
 
 The link is automatic: at every session start and on every start response the package calls `require('@backtrace/react-native').BacktraceClient.instance.addAttribute(map)` (an optional require that never throws). Link a client explicitly with `TestFairy.setBacktraceClient(client)` when Backtrace is wrapped behind your own module or your package manager does not let this package resolve `@backtrace/react-native` (strict pnpm or Yarn PnP layouts; it is declared as an optional peer dependency); `null` restores the automatic link and replays the current snapshot to `BacktraceClient.instance`.
 
-Requirements: `@backtrace/react-native` 0.2.3 or later. Version 0.2.2 never forwards `addAttribute` after `initialize()` to its native crash reporter, so native crash reports would miss the attributes. Until 0.2.3 is published as stable, install the `rc` dist-tag (`^0.2.3-rc`).
+Requirements: `@backtrace/react-native` 0.2.3 or later. Version 0.2.2 never forwards `addAttribute` after `initialize()` to its native crash reporter, so native crash reports would miss the attributes.
 
 Do not use `setCorrelationId` or `identify` for correlation: both are deprecated and write the user-identity field (the same one `setUserId` writes). Keep `setUserId` for the actual user.
 
